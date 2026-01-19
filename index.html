@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attorney Maze Game - Navigate to the Courtroom</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚖️ Attorney Maze Challenge ⚖️</h1>
+            <p class="subtitle">Navigate through the legal maze to reach the courtroom!</p>
+        </header>
+
+        <div class="game-info">
+            <div class="info-panel">
+                <div class="stat">
+                    <span class="label">Level:</span>
+                    <span id="level" class="value">1</span>
+                </div>
+                <div class="stat">
+                    <span class="label">Case Files:</span>
+                    <span id="cases" class="value">0</span>
+                </div>
+                <div class="stat">
+                    <span class="label">Moves:</span>
+                    <span id="moves" class="value">0</span>
+                </div>
+                <div class="stat">
+                    <span class="label">Time:</span>
+                    <span id="timer" class="value">00:00</span>
+                </div>
+            </div>
+            <div class="controls">
+                <button id="newGame" class="btn btn-primary">New Game</button>
+                <button id="resetLevel" class="btn btn-secondary">Reset Level</button>
+            </div>
+        </div>
+
+        <div id="gameCanvas"></div>
+
+        <div class="instructions">
+            <h3>🎮 Controls</h3>
+            <div class="control-grid">
+                <div class="control-item">
+                    <kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd> or <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> - Move
+                </div>
+                <div class="control-item">
+                    <span class="icon">👔</span> - Your Attorney
+                </div>
+                <div class="control-item">
+                    <span class="icon">🏛️</span> - Courtroom (Goal)
+                </div>
+                <div class="control-item">
+                    <span class="icon">📂</span> - Case Files (Bonus)
+                </div>
+            </div>
+        </div>
+
+        <div id="modal" class="modal hidden">
+            <div class="modal-content">
+                <h2 id="modalTitle">🎉 Level Complete!</h2>
+                <p id="modalMessage">Congratulations! You reached the courtroom.</p>
+                <div id="modalStats"></div>
+                <button id="modalButton" class="btn btn-primary">Next Level</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
