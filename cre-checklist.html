@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRE Closing Checklist Generator</title>
+    <link rel="stylesheet" href="cre-checklist.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <h1>Commercial Real Estate Closing Checklist Generator</h1>
+            <p class="subtitle">Upload or paste your Purchase and Sale Agreement to generate a comprehensive closing checklist</p>
+        </header>
+
+        <main class="main-content">
+            <!-- PSA Input Section -->
+            <section class="psa-input-section" id="psaInputSection">
+                <div class="section-header">
+                    <h2>Step 1: Input Purchase and Sale Agreement</h2>
+                </div>
+
+                <div class="input-options">
+                    <div class="tab-buttons">
+                        <button class="tab-btn active" data-tab="paste">Paste Text</button>
+                        <button class="tab-btn" data-tab="upload">Upload File</button>
+                        <button class="tab-btn" data-tab="sample">Use Sample PSA</button>
+                    </div>
+
+                    <div class="tab-content active" id="paste-tab">
+                        <textarea id="psaText" placeholder="Paste the full text of your Purchase and Sale Agreement here..."></textarea>
+                    </div>
+
+                    <div class="tab-content" id="upload-tab">
+                        <div class="upload-area" id="uploadArea">
+                            <div class="upload-icon">📄</div>
+                            <p>Drag and drop your PSA document here</p>
+                            <p class="small">or</p>
+                            <input type="file" id="fileInput" accept=".txt,.doc,.docx,.pdf" hidden>
+                            <button class="btn btn-secondary" onclick="document.getElementById('fileInput').click()">Browse Files</button>
+                            <p class="file-types">Supported: .txt, .doc, .docx, .pdf</p>
+                        </div>
+                        <div id="filePreview" class="file-preview hidden"></div>
+                    </div>
+
+                    <div class="tab-content" id="sample-tab">
+                        <div class="sample-info">
+                            <p>Load a sample Purchase and Sale Agreement to see how the checklist generator works.</p>
+                            <button class="btn btn-primary" id="loadSampleBtn">Load Sample PSA</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-primary btn-large" id="generateBtn">
+                        <span class="btn-icon">📋</span>
+                        Generate Closing Checklist
+                    </button>
+                </div>
+            </section>
+
+            <!-- Extracted Information Section -->
+            <section class="extracted-info-section hidden" id="extractedInfoSection">
+                <div class="section-header">
+                    <h2>Step 2: Review Extracted Information</h2>
+                    <button class="btn btn-secondary btn-small" id="editExtractedBtn">Edit</button>
+                </div>
+
+                <div class="info-grid" id="extractedInfoGrid">
+                    <!-- Dynamically populated -->
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" id="backToInputBtn">Back to Input</button>
+                    <button class="btn btn-primary" id="proceedToChecklistBtn">Proceed to Checklist</button>
+                </div>
+            </section>
+
+            <!-- Closing Checklist Section -->
+            <section class="checklist-section hidden" id="checklistSection">
+                <div class="section-header">
+                    <h2>Step 3: Commercial Real Estate Closing Checklist</h2>
+                    <div class="header-actions">
+                        <button class="btn btn-secondary btn-small" id="expandAllBtn">Expand All</button>
+                        <button class="btn btn-secondary btn-small" id="collapseAllBtn">Collapse All</button>
+                    </div>
+                </div>
+
+                <!-- Transaction Summary Card -->
+                <div class="transaction-summary" id="transactionSummary">
+                    <!-- Dynamically populated -->
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="progress-container">
+                    <div class="progress-header">
+                        <span>Completion Progress</span>
+                        <span id="progressPercent">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="progress-stats">
+                        <span><strong id="completedCount">0</strong> Completed</span>
+                        <span><strong id="pendingCount">0</strong> Pending</span>
+                        <span><strong id="naCount">0</strong> N/A</span>
+                    </div>
+                </div>
+
+                <!-- Checklist Categories -->
+                <div class="checklist-container" id="checklistContainer">
+                    <!-- Dynamically populated -->
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons checklist-actions">
+                    <button class="btn btn-secondary" id="backToReviewBtn">Back to Review</button>
+                    <button class="btn btn-secondary" id="saveProgressBtn">
+                        <span class="btn-icon">💾</span> Save Progress
+                    </button>
+                    <button class="btn btn-secondary" id="exportPdfBtn">
+                        <span class="btn-icon">📄</span> Export PDF
+                    </button>
+                    <button class="btn btn-primary" id="printChecklistBtn">
+                        <span class="btn-icon">🖨️</span> Print Checklist
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <footer class="app-footer">
+            <p>CRE Closing Checklist Generator | For professional use only | Always consult with legal counsel</p>
+        </footer>
+    </div>
+
+    <!-- Edit Modal -->
+    <div class="modal hidden" id="editModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Transaction Details</h3>
+                <button class="modal-close" id="closeModalBtn">&times;</button>
+            </div>
+            <div class="modal-body" id="editModalBody">
+                <!-- Dynamically populated -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelEditBtn">Cancel</button>
+                <button class="btn btn-primary" id="saveEditBtn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notes Modal -->
+    <div class="modal hidden" id="notesModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Item Notes</h3>
+                <button class="modal-close" id="closeNotesModalBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <textarea id="itemNotes" placeholder="Add notes for this checklist item..."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelNotesBtn">Cancel</button>
+                <button class="btn btn-primary" id="saveNotesBtn">Save Notes</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="cre-checklist.js"></script>
+</body>
+</html>
