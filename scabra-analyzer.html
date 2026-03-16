@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCABRA HB 5252 Credit Analyzer</title>
+    <link rel="stylesheet" href="scabra-analyzer.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="header-badge">SC House Bill 5252 &bull; Introduced Feb 24, 2026 &bull; Analysis Current as of March 2026</div>
+            <h1>SCABRA Credit Analyzer</h1>
+            <p class="subtitle">South Carolina Abandoned Buildings Revitalization Act &mdash; Strategic Analysis Tool for Real Estate Developers, Mezzanine Lenders &amp; Private Equity Investors</p>
+            <div class="header-alert">
+                <span class="alert-icon">&#9888;</span>
+                <div>
+                    <strong>Regulatory Conflict Alert:</strong> H.&nbsp;5252 proposes statutory changes that would overrule key portions of Revenue Ruling&nbsp;#26-1. This tool analyzes project eligibility and financing risk under <em>both</em> regimes simultaneously.
+                </div>
+            </div>
+        </header>
+
+        <!-- Tab Navigation -->
+        <nav class="tab-nav" role="tablist">
+            <button class="tab-btn active" data-tab="eligibility" role="tab" aria-selected="true">
+                <span class="tab-icon">&#127959;</span>
+                Eligibility Check
+            </button>
+            <button class="tab-btn" data-tab="calculator" role="tab" aria-selected="false">
+                <span class="tab-icon">&#128176;</span>
+                Credit Calculator
+            </button>
+            <button class="tab-btn" data-tab="capital" role="tab" aria-selected="false">
+                <span class="tab-icon">&#9888;</span>
+                Capital Stack Risk
+            </button>
+            <button class="tab-btn" data-tab="checklist" role="tab" aria-selected="false">
+                <span class="tab-icon">&#9989;</span>
+                Due Diligence
+            </button>
+            <button class="tab-btn" data-tab="comparison" role="tab" aria-selected="false">
+                <span class="tab-icon">&#9878;</span>
+                Law Comparison
+            </button>
+        </nav>
+
+        <!-- Tab Content -->
+        <main class="tab-content-container">
+
+            <!-- ============================================================
+                 ELIGIBILITY TAB
+            ============================================================ -->
+            <section class="tab-panel active" id="eligibility-panel" role="tabpanel">
+                <div class="panel-header">
+                    <h2>Property Eligibility Assessment</h2>
+                    <p>Determine whether your property qualifies under the current SCABRA statute, proposed HB&nbsp;5252, or both.</p>
+                </div>
+
+                <div class="wizard-container">
+                    <!-- Step Indicators -->
+                    <div class="wizard-steps">
+                        <div class="wizard-step active" data-step="1">
+                            <span class="step-number">1</span>
+                            <span class="step-label">Property Type</span>
+                        </div>
+                        <div class="wizard-divider"></div>
+                        <div class="wizard-step" data-step="2">
+                            <span class="step-number">2</span>
+                            <span class="step-label">Vacancy Details</span>
+                        </div>
+                        <div class="wizard-divider"></div>
+                        <div class="wizard-step" data-step="3">
+                            <span class="step-number">3</span>
+                            <span class="step-label">Prior Use &amp; NOI</span>
+                        </div>
+                        <div class="wizard-divider"></div>
+                        <div class="wizard-step" data-step="4">
+                            <span class="step-number">4</span>
+                            <span class="step-label">Results</span>
+                        </div>
+                    </div>
+
+                    <!-- Step 1: Property Type -->
+                    <div class="wizard-page active" id="step-1">
+                        <h3>What type of building is this?</h3>
+                        <div class="property-type-grid">
+                            <label class="property-card" data-type="commercial">
+                                <input type="radio" name="propertyType" value="commercial">
+                                <div class="card-icon">&#127970;</div>
+                                <div class="card-label">Commercial / Office / Retail</div>
+                                <div class="card-desc">Income-producing business property</div>
+                            </label>
+                            <label class="property-card" data-type="industrial">
+                                <input type="radio" name="propertyType" value="industrial">
+                                <div class="card-icon">&#127981;</div>
+                                <div class="card-label">Industrial / Warehouse</div>
+                                <div class="card-desc">Manufacturing or storage facility</div>
+                            </label>
+                            <label class="property-card" data-type="religious">
+                                <input type="radio" name="propertyType" value="religious">
+                                <div class="card-icon">&#9961;</div>
+                                <div class="card-label">Religious Institution</div>
+                                <div class="card-desc">Church, mosque, temple, synagogue</div>
+                            </label>
+                            <label class="property-card" data-type="school_public">
+                                <input type="radio" name="propertyType" value="school_public">
+                                <div class="card-icon">&#127979;</div>
+                                <div class="card-label">Public School</div>
+                                <div class="card-desc">Government-operated, no tuition</div>
+                            </label>
+                            <label class="property-card" data-type="school_private">
+                                <input type="radio" name="propertyType" value="school_private">
+                                <div class="card-icon">&#127979;</div>
+                                <div class="card-label">Private School</div>
+                                <div class="card-desc">Tuition-charging private institution</div>
+                            </label>
+                            <label class="property-card" data-type="nonprofit">
+                                <input type="radio" name="propertyType" value="nonprofit">
+                                <div class="card-icon">&#129309;</div>
+                                <div class="card-label">Non-Profit / Community</div>
+                                <div class="card-desc">Community center, charity, civic org</div>
+                            </label>
+                            <label class="property-card" data-type="government">
+                                <input type="radio" name="propertyType" value="government">
+                                <div class="card-icon">&#127963;</div>
+                                <div class="card-label">Government / Municipal</div>
+                                <div class="card-desc">City hall, courthouse, public facility</div>
+                            </label>
+                            <label class="property-card" data-type="mixed">
+                                <input type="radio" name="propertyType" value="mixed">
+                                <div class="card-icon">&#127960;</div>
+                                <div class="card-label">Mixed-Use</div>
+                                <div class="card-desc">Combination of uses above</div>
+                            </label>
+                        </div>
+                        <div class="wizard-nav">
+                            <span></span>
+                            <button class="btn btn-primary" id="step1Next" disabled>Next: Vacancy Details &#8594;</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Vacancy Details -->
+                    <div class="wizard-page" id="step-2">
+                        <h3>Vacancy &amp; Occupancy Information</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="vacancyPercent">Current Vacancy Rate (%)</label>
+                                <input type="number" id="vacancyPercent" min="0" max="100" placeholder="e.g., 75">
+                                <span class="field-hint">SCABRA requires at least <strong>66% unoccupied</strong></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="vacantYears">Years Predominantly Vacant (consecutive)</label>
+                                <input type="number" id="vacantYears" min="0" max="100" placeholder="e.g., 6">
+                                <span class="field-hint">Both current law and HB&nbsp;5252 require <strong>5+ years</strong></span>
+                            </div>
+                            <div class="form-group full-width">
+                                <label>Has the building been listed on SC's abandoned buildings registry or received prior SCDOR certification?</label>
+                                <div class="radio-group">
+                                    <label class="radio-label"><input type="radio" name="registry" value="yes"> Yes &mdash; previously certified</label>
+                                    <label class="radio-label"><input type="radio" name="registry" value="no"> No &mdash; not yet certified</label>
+                                    <label class="radio-label"><input type="radio" name="registry" value="unknown"> Unknown / Need to verify</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="wizard-nav">
+                            <button class="btn btn-secondary" id="step2Back">&#8592; Back</button>
+                            <button class="btn btn-primary" id="step2Next">Next: Prior Use &amp; NOI &#8594;</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Income-Producing History & NOI -->
+                    <div class="wizard-page" id="step-3">
+                        <h3>Prior Use &amp; Notice of Intent Status</h3>
+                        <div class="info-banner">
+                            The <strong>"income-producing"</strong> question is critical under current law (RR&nbsp;#26-1) but would be eliminated by HB&nbsp;5252's "unoccupied" standard.
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group full-width">
+                                <label>Before becoming vacant, was the building used for income-producing or business purposes?</label>
+                                <div class="radio-group vertical">
+                                    <label class="radio-label"><input type="radio" name="incomeProd" value="yes_business"> Yes &mdash; operated as a for-profit business (commercial, industrial, private school, etc.)</label>
+                                    <label class="radio-label"><input type="radio" name="incomeProd" value="no_religious"> No &mdash; religious use (primary purpose was worship, not income)</label>
+                                    <label class="radio-label"><input type="radio" name="incomeProd" value="no_public_school"> No &mdash; public school with no tuition charged</label>
+                                    <label class="radio-label"><input type="radio" name="incomeProd" value="no_nonprofit"> No &mdash; non-profit community or civic use</label>
+                                    <label class="radio-label"><input type="radio" name="incomeProd" value="no_government"> No &mdash; government / municipal use</label>
+                                </div>
+                            </div>
+                            <div class="form-group full-width">
+                                <label>Notice of Intent (NOI) Status with the SC Department of Revenue</label>
+                                <div class="radio-group vertical">
+                                    <label class="radio-label"><input type="radio" name="noiStatus" value="before_expense"> Filed <em>before</em> the first rehabilitation expense was incurred &#8594; Compliant under both regimes</label>
+                                    <label class="radio-label"><input type="radio" name="noiStatus" value="before_permit"> Filed after some expenses but <em>before</em> the building permit was obtained &#8594; Compliant under HB&nbsp;5252 safe harbor</label>
+                                    <label class="radio-label"><input type="radio" name="noiStatus" value="after_permit"> Filed <em>after</em> the building permit was obtained &#8594; Partial eligibility risk</label>
+                                    <label class="radio-label"><input type="radio" name="noiStatus" value="not_filed"> Not yet filed &#8594; File before permit is issued</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="wizard-nav">
+                            <button class="btn btn-secondary" id="step3Back">&#8592; Back</button>
+                            <button class="btn btn-primary" id="step3Next">Analyze Eligibility &#8594;</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Results -->
+                    <div class="wizard-page" id="step-4">
+                        <h3>Eligibility Analysis Results</h3>
+                        <div id="eligibilityResults">
+                            <!-- Populated by JS -->
+                        </div>
+                        <div class="wizard-nav">
+                            <button class="btn btn-secondary" id="step4Back">&#8592; Revise Answers</button>
+                            <button class="btn btn-primary" id="goToCalculator">Calculate Credits &#8594;</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 CREDIT CALCULATOR TAB
+            ============================================================ -->
+            <section class="tab-panel" id="calculator-panel" role="tabpanel">
+                <div class="panel-header">
+                    <h2>SCABRA Credit Calculator</h2>
+                    <p>Estimate your SC Abandoned Buildings Revitalization Act tax credit based on qualified rehabilitation expenses.</p>
+                </div>
+
+                <div class="calculator-grid">
+                    <div class="calc-inputs card">
+                        <h3>Project Information</h3>
+                        <div class="form-group">
+                            <label for="totalRehab">Total Estimated Rehabilitation Costs ($)</label>
+                            <input type="number" id="totalRehab" placeholder="e.g., 5000000" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="qualifiedPct">Estimated % of Costs That Are Qualified Expenses</label>
+                            <input type="number" id="qualifiedPct" min="0" max="100" value="80" placeholder="80">
+                            <span class="field-hint">Must be &ge;80% of total project costs to satisfy SCABRA's 80% threshold test</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="buildingSize">Building Square Footage (optional)</label>
+                            <input type="number" id="buildingSize" placeholder="e.g., 25000" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="creditRate">Applicable Credit Rate</label>
+                            <select id="creditRate">
+                                <option value="0.25">25% &mdash; Standard SCABRA Rate</option>
+                            </select>
+                            <span class="field-hint">SCABRA provides a flat 25% credit on qualified rehabilitation expenses</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="accountingMethod">Cost Accounting Method</label>
+                            <select id="accountingMethod">
+                                <option value="accrual">Accrual Method (Required &mdash; compliant with SCABRA &amp; HB&nbsp;5252)</option>
+                                <option value="cash">Cash Method (Non-compliant &mdash; does not satisfy SCABRA requirements)</option>
+                            </select>
+                        </div>
+                        <div id="cashMethodWarning" class="alert alert-warning hidden">
+                            <strong>&#9888; Warning:</strong> The cash method does not satisfy SCABRA or HB&nbsp;5252 requirements for the 80% qualified expense threshold. You must use the <strong>accrual method</strong>.
+                        </div>
+                        <button class="btn btn-primary btn-large" id="calculateBtn">Calculate Credit</button>
+                    </div>
+
+                    <div class="calc-results card">
+                        <h3>Credit Estimate</h3>
+                        <div id="creditResults">
+                            <div class="placeholder-result">
+                                <div class="placeholder-icon">&#128176;</div>
+                                <p>Enter your project information and click <strong>Calculate Credit</strong> to see your estimated SCABRA tax credit.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card info-card">
+                    <h3>Qualified Rehabilitation Expenses &mdash; Key Rules</h3>
+                    <div class="rules-grid">
+                        <div class="rule-item eligible">
+                            <div class="rule-header">
+                                <span class="rule-icon rule-yes">&#10003;</span>
+                                <strong>Generally Eligible</strong>
+                            </div>
+                            <ul>
+                                <li>Structural renovations</li>
+                                <li>Mechanical, electrical, plumbing (MEP)</li>
+                                <li>HVAC systems</li>
+                                <li>Interior buildout tied to adaptive reuse</li>
+                                <li>Facade restoration</li>
+                                <li>Environmental remediation (if required)</li>
+                                <li>Architectural &amp; engineering fees (if after NOI)</li>
+                            </ul>
+                        </div>
+                        <div class="rule-item ineligible">
+                            <div class="rule-header">
+                                <span class="rule-icon rule-no">&#10007;</span>
+                                <strong>Generally Ineligible</strong>
+                            </div>
+                            <ul>
+                                <li>Land acquisition costs</li>
+                                <li>New construction (non-rehabilitation)</li>
+                                <li>Furnishings and equipment</li>
+                                <li>Financing costs and loan fees</li>
+                                <li>Developer fees (in most cases)</li>
+                                <li>Soft costs exceeding statutory limits</li>
+                                <li>Costs incurred before NOI filing</li>
+                            </ul>
+                        </div>
+                        <div class="rule-item warning-rule">
+                            <div class="rule-header">
+                                <span class="rule-icon rule-warn">&#9888;</span>
+                                <strong>Timing Risk &mdash; Pre-NOI Costs</strong>
+                            </div>
+                            <ul>
+                                <li>A&amp;E fees incurred before NOI: at risk under current statute</li>
+                                <li>HB&nbsp;5252 ties deadline to building permit &mdash; clearer safe harbor</li>
+                                <li>Costs incurred after NOI filing remain eligible even if permit deadline missed under HB&nbsp;5252</li>
+                                <li>Both regimes require <strong>accrual-basis</strong> accounting for the 80% threshold test</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 CAPITAL STACK RISK TAB
+            ============================================================ -->
+            <section class="tab-panel" id="capital-panel" role="tabpanel">
+                <div class="panel-header">
+                    <h2>Capital Stack Risk Analysis</h2>
+                    <p>Analyze the financing impact of HB&nbsp;5252's proposed prohibition on pledging SCABRA credits as debt collateral.</p>
+                </div>
+
+                <div class="alert alert-critical">
+                    <div class="alert-icon">&#128680;</div>
+                    <div class="alert-content">
+                        <strong>Critical Regulatory Conflict: RR&nbsp;#26-1 vs. HB&nbsp;5252 &sect;&nbsp;12-67-140(B)(5)(c)</strong>
+                        <p>Revenue Ruling #26-1 expressly <em>permits</em> pledging future SCABRA credits as loan collateral. HB&nbsp;5252 would expressly <em>prohibit</em> any pledge, assignment, hypothecation, or collateralization of credits as security for debt. Until the bill is enacted, RR&nbsp;#26-1 governs &mdash; but lenders and developers must plan for both scenarios now.</p>
+                    </div>
+                </div>
+
+                <div class="capital-analyzer card">
+                    <h3>Project Financing Configuration</h3>
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label>Does your financing structure pledge or assign SCABRA credits as collateral?</label>
+                            <div class="toggle-group">
+                                <label class="toggle-option selected" id="collateral-yes-label">
+                                    <input type="radio" name="collateral" value="yes" checked>
+                                    <span>Yes &mdash; Credits Pledged as Collateral</span>
+                                </label>
+                                <label class="toggle-option" id="collateral-no-label">
+                                    <input type="radio" name="collateral" value="no">
+                                    <span>No &mdash; No Credit Collateralization</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="loanAmount">Loan / Debt Amount ($)</label>
+                            <input type="number" id="loanAmount" placeholder="e.g., 3500000">
+                        </div>
+                        <div class="form-group">
+                            <label for="creditAmountInput">Expected SCABRA Credit Amount ($)</label>
+                            <input type="number" id="creditAmountInput" placeholder="e.g., 1250000">
+                        </div>
+                        <div class="form-group">
+                            <label for="lenderType">Lender / Investor Type</label>
+                            <select id="lenderType">
+                                <option value="bridge">Bridge Lender</option>
+                                <option value="mezzanine">Mezzanine Lender</option>
+                                <option value="senior">Senior Lender / Bank</option>
+                                <option value="private">Private Equity / Fund</option>
+                                <option value="cdfi">CDFI / Impact Lender</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary btn-large" id="analyzeCapitalBtn">Analyze Risk</button>
+                </div>
+
+                <div id="capitalResults" class="hidden">
+                    <!-- Populated by JS -->
+                </div>
+
+                <div class="card">
+                    <h3>Alternative Capital Structures Compatible with HB&nbsp;5252</h3>
+                    <div class="alternatives-grid">
+                        <div class="alternative-card">
+                            <div class="alt-icon">&#129309;</div>
+                            <h4>Preferred Equity</h4>
+                            <p>Convert mezzanine debt to preferred equity with priority distributions tied to credit realization. No collateral pledge needed; investor protected via equity waterfall.</p>
+                            <div class="alt-tag recommended">Recommended</div>
+                        </div>
+                        <div class="alternative-card">
+                            <div class="alt-icon">&#128188;</div>
+                            <h4>Credit Purchase Agreement</h4>
+                            <p>Pre-negotiate a binding purchase agreement with a state tax-credit investor at a set price per dollar of credit, providing exit certainty without a collateral assignment.</p>
+                            <div class="alt-tag common">Common Practice</div>
+                        </div>
+                        <div class="alternative-card">
+                            <div class="alt-icon">&#127974;</div>
+                            <h4>Increased Equity Cushion</h4>
+                            <p>Require higher developer equity contributions upfront (30&ndash;40% vs. 20%) to reduce lender risk previously mitigated by the credit pledge.</p>
+                            <div class="alt-tag conservative">Conservative</div>
+                        </div>
+                        <div class="alternative-card">
+                            <div class="alt-icon">&#128203;</div>
+                            <h4>Completion Guaranty / Payment Bond</h4>
+                            <p>Enhance lender protection via personal or corporate completion guaranties or payment bonds rather than a credit collateral assignment or hypothecation.</p>
+                            <div class="alt-tag mitigation">Risk Mitigation</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 DUE DILIGENCE CHECKLIST TAB
+            ============================================================ -->
+            <section class="tab-panel" id="checklist-panel" role="tabpanel">
+                <div class="panel-header">
+                    <h2>Attorney's Due Diligence Checklist</h2>
+                    <p>Mandatory action items for developers with projects slated for 2026&ndash;2027. Based on the Senior Tax Incentives Practice Group client alert, March&nbsp;15,&nbsp;2026.</p>
+                </div>
+
+                <div class="checklist-progress-section">
+                    <div class="checklist-progress-header">
+                        <span>Checklist Completion</span>
+                        <span id="ddProgressLabel">0% (0 of 5 completed)</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="ddProgressFill" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="due-diligence-list" id="ddChecklist">
+                    <!-- Populated by JS -->
+                </div>
+
+                <div class="card deadline-card">
+                    <h3>&#128197; Critical Deadline: June&nbsp;1, 2026</h3>
+                    <div class="deadline-content">
+                        <div id="deadlineCountdown" class="countdown">
+                            <!-- Populated by JS -->
+                        </div>
+                        <p>If you have an active NOI on file, you have until <strong>June&nbsp;1,&nbsp;2026</strong> to amend it under Revenue Ruling&nbsp;#26-1's administrative reset window. After this date, the ability to amend under current guidance expires.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 REGULATORY COMPARISON TAB
+            ============================================================ -->
+            <section class="tab-panel" id="comparison-panel" role="tabpanel">
+                <div class="panel-header">
+                    <h2>Regulatory Comparison: Current Law vs. HB&nbsp;5252</h2>
+                    <p>Side-by-side analysis of how House Bill&nbsp;5252 would modify the South Carolina Abandoned Buildings Revitalization Act.</p>
+                </div>
+
+                <div class="comparison-table-wrapper">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th class="issue-col">Provision</th>
+                                <th class="current-col">Current Law + RR&nbsp;#26-1</th>
+                                <th class="hb5252-col">HB&nbsp;5252 (Proposed)</th>
+                                <th class="impact-col">Strategic Impact</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Eligibility Standard</strong></td>
+                                <td>Building must be "closed to business or otherwise nonoperational for income-producing purposes" for 5+ years at 66%+ vacancy</td>
+                                <td class="cell-positive">Replaces with simple <strong>"unoccupied"</strong> standard &mdash; 66%+ vacancy for 5+ years</td>
+                                <td class="impact-positive">&#9989; Expansion &mdash; vastly more properties qualify</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Religious Institutions</strong></td>
+                                <td class="cell-negative">&#10060; Disqualified &mdash; primary purpose is religious, not income-producing (per RR&nbsp;#26-1)</td>
+                                <td class="cell-positive">&#9989; Now eligible if 66%+ unoccupied for 5+ years</td>
+                                <td class="impact-positive">&#9989; Major expansion for adaptive reuse of churches</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Public Schools (no tuition)</strong></td>
+                                <td class="cell-negative">&#10060; Disqualified if no tuition charged &mdash; not income-producing per RR&nbsp;#26-1</td>
+                                <td class="cell-positive">&#9989; Now eligible if 66%+ unoccupied for 5+ years</td>
+                                <td class="impact-positive">&#9989; Opens large inventory of closed public schools</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Non-Profits / Community Centers</strong></td>
+                                <td class="cell-negative">&#10060; Generally disqualified &mdash; not operational for income-producing purposes</td>
+                                <td class="cell-positive">&#9989; Now eligible under unified "unoccupied" standard</td>
+                                <td class="impact-positive">&#9989; Significant new pipeline for community-centric developers</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Government / Municipal Buildings</strong></td>
+                                <td>Separate "State-owned abandoned building" tier with specialized certification requirements</td>
+                                <td class="cell-positive">Separate tier <strong>abolished</strong>; single unified standard applies to all buildings</td>
+                                <td class="impact-neutral">&#8594; Simplified &mdash; reduces due diligence friction</td>
+                            </tr>
+                            <tr class="high-risk-row">
+                                <td><strong>Credit as Debt Collateral</strong></td>
+                                <td class="cell-positive">&#9989; Expressly <em>permitted</em> under RR&nbsp;#26-1 &mdash; lenders may take a perfected security interest in future credits</td>
+                                <td class="cell-negative">&#128683; Expressly <em>PROHIBITED</em> &mdash; taxpayer may not "pledge, assign, hypothecate, or otherwise collateralize" any credit as security for debt</td>
+                                <td class="impact-negative">&#128680; Critical Risk &mdash; breaks the standard SCABRA capital stack</td>
+                            </tr>
+                            <tr>
+                                <td><strong>NOI Filing Deadline</strong></td>
+                                <td>Must file before incurring <strong>first rehabilitation expense</strong> (including A&amp;E fees)</td>
+                                <td class="cell-positive">Must file before obtaining <strong>building permit</strong>; expenses after NOI still qualify even if permit deadline missed</td>
+                                <td class="impact-positive">&#9989; Benefit &mdash; clearer bright line; protects early soft costs</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Accounting Method (80% Test)</strong></td>
+                                <td>Accrual method required for calculating qualified expense threshold</td>
+                                <td>Accrual method continues to be required &mdash; no change proposed</td>
+                                <td class="impact-neutral">&#8594; No change &mdash; ensure project CPAs use accrual basis</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Credit Rate</strong></td>
+                                <td>25% of qualified rehabilitation expenses</td>
+                                <td>25% &mdash; no change proposed in H.&nbsp;5252</td>
+                                <td class="impact-neutral">&#8594; No change in credit percentage</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Effective Status</strong></td>
+                                <td class="cell-positive">&#9989; Currently in effect &mdash; governs all active projects as of March&nbsp;2026</td>
+                                <td>Introduced Feb&nbsp;24,&nbsp;2026 &mdash; pending SC House vote; not yet law</td>
+                                <td class="impact-warning">&#9888; Plan for both scenarios in all financing agreements</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card conclusion-card">
+                    <h3>Bottom Line for Practitioners</h3>
+                    <div class="conclusion-grid">
+                        <div class="conclusion-item conclusion-positive">
+                            <h4>&#9989; HB&nbsp;5252 Makes It <u>Easier</u> to Qualify</h4>
+                            <ul>
+                                <li>"Unoccupied" standard vs. "income-producing" requirement</li>
+                                <li>Churches, public schools, non-profits, and government buildings now eligible</li>
+                                <li>Building permit milestone replaces "first expense" deadline</li>
+                                <li>Simplified state-owned property process (separate tier abolished)</li>
+                            </ul>
+                        </div>
+                        <div class="conclusion-item conclusion-negative">
+                            <h4>&#128683; HB&nbsp;5252 Makes It <u>Harder</u> to Finance</h4>
+                            <ul>
+                                <li>Total prohibition on credit collateralization</li>
+                                <li>Bridge and mezzanine lenders lose perfected security interest in credits</li>
+                                <li>Existing capital stacks must be restructured</li>
+                                <li>May significantly tighten credit availability for adaptive reuse</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="disclaimer">
+                        This tool is for informational purposes only and does not constitute legal or tax advice. Consult qualified counsel before finalizing any financing or development agreement that relies on SCABRA credits.
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="app-footer">
+            <p>SCABRA HB&nbsp;5252 Credit Analyzer &bull; For professional use only &bull; Does not constitute legal or tax advice &bull; Always consult with qualified tax counsel &bull; Analysis current as of March&nbsp;2026</p>
+        </footer>
+    </div>
+
+    <script src="scabra-analyzer.js"></script>
+</body>
+</html>
