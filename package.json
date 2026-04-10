@@ -1,0 +1,15 @@
+{
+  "name": "sc-tax-incentive-scanner",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "SC Code Complete Tax Incentive Scanner using Claude Sonnet 4.6",
+  "main": "sc_code_scanner_sonnet.js",
+  "scripts": {
+    "scan": "node sc_code_scanner_sonnet.js",
+    "scan:title12": "node sc_code_scanner_sonnet.js --titles=12",
+    "scan:resume": "node sc_code_scanner_sonnet.js --resume"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0"
+  }
+}
