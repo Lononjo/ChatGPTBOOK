@@ -1,0 +1,1640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wyche Engagement Letter Generator</title>
+
+  <!--
+    DEPENDENCIES (CDN — no installation required)
+    If a CDN is blocked by your network, download the file, host it on
+    SharePoint, and update the src/href below.
+  -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+
+  <style>
+    /* =========================================================
+       DESIGN TOKENS
+       ========================================================= */
+    :root {
+      --navy:#1a2744; --navy-2:#243460; --gold:#b8923c; --gold-light:#d4b86a;
+      --parchment:#f7f5ee; --white:#ffffff;
+      --gray-100:#f4f3ee; --gray-200:#e8e5de; --gray-300:#d0ccc2; --gray-500:#8a8680;
+      --text:#1a1a18; --text-mid:#3a3835; --text-light:#6a6660;
+      --red:#b83232; --green:#2c7a4b;
+      --radius:6px;
+      --shadow-sm:0 1px 3px rgba(0,0,0,.07),0 1px 2px rgba(0,0,0,.05);
+      --shadow-md:0 4px 12px rgba(0,0,0,.10),0 2px 4px rgba(0,0,0,.07);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html,body{height:100%;overflow:hidden;}
+    body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--parchment);color:var(--text);font-size:14px;line-height:1.5;}
+
+    .app{display:flex;flex-direction:column;height:100vh;}
+    .app-header{height:54px;background:var(--navy);border-bottom:2px solid var(--gold);display:flex;align-items:center;padding:0 20px;gap:12px;flex-shrink:0;}
+    .header-logo{width:30px;height:30px;background:var(--gold);border-radius:5px;display:flex;align-items:center;justify-content:center;color:var(--navy);font-size:15px;flex-shrink:0;}
+    .header-text h1{font-size:15px;font-weight:600;color:white;letter-spacing:.02em;}
+    .header-text .sub{font-size:10px;color:rgba(255,255,255,.42);letter-spacing:.07em;text-transform:uppercase;}
+
+    .app-body{display:flex;flex:1;overflow:hidden;}
+
+    /* Sidebar */
+    .sidebar{width:218px;background:var(--navy);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;padding:10px 0 20px;}
+    .sidebar-label{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);padding:14px 14px 6px;}
+    .doc-type-btn{display:flex;align-items:center;gap:10px;padding:9px 13px;width:100%;background:transparent;border:none;border-left:3px solid transparent;color:rgba(255,255,255,.62);text-align:left;cursor:pointer;font-family:inherit;font-size:12.5px;transition:all .12s;}
+    .doc-type-btn:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.9);}
+    .doc-type-btn.active{background:rgba(184,146,60,.14);border-left-color:var(--gold);color:var(--gold-light);}
+    .doc-type-icon{width:28px;height:28px;background:rgba(255,255,255,.08);border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;}
+    .doc-type-btn.active .doc-type-icon{background:rgba(184,146,60,.2);}
+    .doc-type-name{font-size:12.5px;font-weight:500;line-height:1.2;}
+    .doc-type-sub{font-size:10.5px;opacity:.52;margin-top:1px;}
+
+    /* Main */
+    .main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+    .tab-bar{background:var(--white);border-bottom:1px solid var(--gray-200);display:flex;padding:0 18px;flex-shrink:0;}
+    .tab-btn{padding:13px 15px 11px;font-size:13px;font-weight:500;color:var(--text-light);background:transparent;border:none;border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px;white-space:nowrap;transition:all .12s;}
+    .tab-btn:hover{color:var(--text);}
+    .tab-btn.active{color:var(--navy);border-bottom-color:var(--navy);}
+    .section-badge{background:var(--gold);color:white;font-size:10px;font-weight:600;border-radius:9px;padding:1px 5px;display:none;}
+
+    .tab-panels{flex:1;overflow-y:auto;}
+    .tab-panel{display:none;padding:16px;}
+    .tab-panel.active{display:block;}
+
+    .card{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;}
+    .card-header{background:var(--gray-100);border-bottom:1px solid var(--gray-200);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;}
+    .card-header-title{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--navy);}
+    .card-body{padding:16px;}
+
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:13px;}
+    .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px;}
+    .full{grid-column:1/-1;}
+
+    .field{display:flex;flex-direction:column;gap:4px;margin-bottom:0;}
+    .field label{font-size:12px;font-weight:500;color:var(--text-light);}
+    .req{color:var(--red);margin-left:2px;}
+    input[type="text"],input[type="email"],input[type="date"],input[type="number"],select,textarea{width:100%;padding:7px 10px;font-size:13.5px;font-family:inherit;color:var(--text);background:white;border:1px solid var(--gray-300);border-radius:4px;outline:none;transition:border-color .12s,box-shadow .12s;-webkit-appearance:none;}
+    input:focus,select:focus,textarea:focus{border-color:var(--navy-2);box-shadow:0 0 0 2.5px rgba(36,52,96,.1);}
+    textarea{resize:vertical;min-height:58px;}
+    .prefix-wrap{position:relative;flex:1;}
+    .prefix-sym{position:absolute;left:9px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--gray-500);pointer-events:none;}
+    .prefix-wrap input{padding-left:20px !important;}
+    .rate-range{display:flex;align-items:center;gap:8px;}
+    .rate-range-sep{font-size:13px;color:var(--text-light);flex-shrink:0;}
+    .rate-range-unit{font-size:11.5px;color:var(--text-light);flex-shrink:0;}
+    .range-sublabel{font-size:10.5px;font-weight:400;color:var(--text-light);margin-left:4px;}
+
+    /* Segmented control */
+    .seg{display:inline-flex;background:var(--gray-100);border:1px solid var(--gray-200);border-radius:7px;padding:3px;gap:3px;flex-wrap:wrap;}
+    .seg button{border:none;background:transparent;font-family:inherit;font-size:12.5px;font-weight:500;color:var(--text-light);padding:7px 13px;border-radius:5px;cursor:pointer;transition:all .12s;}
+    .seg button:hover{color:var(--text);}
+    .seg button.active{background:var(--white);color:var(--navy);box-shadow:var(--shadow-sm);}
+
+    /* Conditional reveal blocks */
+    .cond{margin-top:13px;padding-top:13px;border-top:1px dashed var(--gray-300);}
+    .cond[hidden]{display:none;}
+    .help{font-size:11.5px;color:var(--text-light);line-height:1.6;margin-bottom:11px;}
+    .help code{background:var(--gray-100);padding:1px 5px;border-radius:3px;font-size:11px;}
+
+    /* Toggle switches */
+    .toggle-row{display:flex;align-items:flex-start;gap:13px;padding:13px 0;border-bottom:1px solid var(--gray-200);}
+    .toggle-row:last-child{border-bottom:none;padding-bottom:0;}
+    .toggle-row:first-child{padding-top:0;}
+    .toggle{position:relative;width:36px;height:20px;flex-shrink:0;margin-top:2px;}
+    .toggle input{position:absolute;opacity:0;width:0;height:0;}
+    .toggle-track{position:absolute;inset:0;background:var(--gray-300);border-radius:10px;cursor:pointer;transition:background .18s;}
+    .toggle-track::after{content:'';position:absolute;width:14px;height:14px;left:3px;top:3px;background:white;border-radius:50%;transition:transform .18s;box-shadow:0 1px 2px rgba(0,0,0,.2);}
+    .toggle input:checked ~ .toggle-track{background:var(--navy-2);}
+    .toggle input:checked ~ .toggle-track::after{transform:translateX(16px);}
+    .toggle input:disabled ~ .toggle-track{opacity:.4;cursor:not-allowed;}
+    .toggle-name{font-size:13px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+    .toggle-desc{font-size:11.5px;color:var(--text-light);margin-top:2px;line-height:1.5;}
+    .toggle-sub-fields{margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:11px;}
+    .toggle-sub-fields .full{grid-column:1/-1;}
+    .badge{font-size:10px;font-weight:500;padding:2px 6px;border-radius:4px;}
+    .toggle-body{flex:1;min-width:0;}
+
+    /* Note / hint */
+    .hint-box{background:var(--gray-100);border:1px solid var(--gray-200);border-radius:var(--radius);padding:12px 14px;margin-bottom:12px;font-size:12px;color:var(--text-mid);line-height:1.65;}
+    .hint-box strong{color:var(--text);}
+    .card.note{background:#fffbf0;border-color:#e8d89a;}
+    .card.note .card-header{background:#fffbf0;border-bottom-color:#e8d89a;}
+    .card.note .card-header-title{color:#8a6420;}
+    .card.note .card-body{font-size:12.5px;color:var(--text-mid);line-height:1.7;}
+    code{background:var(--gray-100);padding:1px 5px;border-radius:3px;font-size:11.5px;font-family:'Cascadia Code',Consolas,'Courier New',monospace;}
+
+    /* Letter preview */
+    .preview-outer{background:var(--gray-100);padding:20px;min-height:100%;display:flex;justify-content:center;}
+    .letter-paper{background:white;width:100%;max-width:680px;padding:54px 60px;font-family:'Times New Roman',Georgia,serif;font-size:12.5px;line-height:1.65;color:#1a1a1a;border:1px solid var(--gray-200);border-radius:2px;box-shadow:var(--shadow-sm);}
+    .l-firm{font-size:19px;font-weight:700;text-align:center;text-transform:uppercase;letter-spacing:.07em;color:var(--navy);margin-bottom:3px;}
+    .l-sub{font-size:10px;color:#888;text-align:center;margin-bottom:18px;}
+    .l-rule{border:none;border-top:1.5px solid var(--navy);margin-bottom:22px;}
+    .l-body p{margin-bottom:11px;text-align:justify;}
+    .l-section-head{font-weight:700;margin:18px 0 7px;}
+    .l-subitem{margin-bottom:8px;padding-left:18px;text-align:justify;}
+    .l-sig{margin-top:34px;}
+    .l-sig-line{border-bottom:1px solid #1a1a1a;width:230px;margin-bottom:3px;margin-top:30px;}
+    .l-accept{margin-top:26px;}
+    .l-page-break{border:none;border-top:2px dashed var(--gray-300);margin:34px 0;position:relative;text-align:center;}
+    .l-page-break::after{content:'PAGE BREAK';position:absolute;top:-7px;left:50%;transform:translateX(-50%);background:white;padding:0 10px;font-family:'Segoe UI',sans-serif;font-size:9px;letter-spacing:.12em;color:var(--gray-500);}
+    .l-terms-title{font-size:15px;font-weight:700;text-align:center;text-transform:uppercase;letter-spacing:.05em;color:var(--navy);margin-bottom:16px;}
+    .ph{background:#fffbe6;border:1px dashed #d4a017;padding:1px 5px;border-radius:2px;color:#7a5800;font-style:italic;font-size:11.5px;}
+
+    /* Generate bar */
+    .generate-bar{background:var(--white);border-top:1px solid var(--gray-200);padding:11px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:14px;}
+    .generate-info{font-size:12px;color:var(--text-light);min-width:0;}
+    .generate-info strong{color:var(--text);}
+    .btn-generate{display:flex;align-items:center;gap:8px;background:var(--navy);color:white;border:none;border-radius:5px;padding:9px 20px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap;}
+    .btn-generate:hover:not(:disabled){background:var(--navy-2);box-shadow:var(--shadow-md);transform:translateY(-1px);}
+    .btn-generate:disabled{opacity:.42;cursor:default;}
+    .btn-generate.loading{background:var(--gold);}
+
+    /* Validation list */
+    .val-list{font-size:11.5px;color:var(--red);}
+
+    /* Toast */
+    .toast{position:fixed;bottom:18px;right:18px;background:var(--navy);color:white;padding:10px 16px;border-radius:var(--radius);font-size:13px;border-left:3px solid var(--gold);display:flex;align-items:center;gap:9px;box-shadow:var(--shadow-md);transform:translateY(80px);opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1);z-index:9999;pointer-events:none;max-width:340px;}
+    .toast.show{transform:translateY(0);opacity:1;}
+    ::-webkit-scrollbar{width:7px;height:7px;}
+    ::-webkit-scrollbar-track{background:transparent;}
+    ::-webkit-scrollbar-thumb{background:var(--gray-300);border-radius:3px;}
+
+    /* CHANGED: [Dim 1] Practice-area selector card + sidebar context (uses existing tokens only) */
+    .pa-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+    .pa-btn{display:flex;flex-direction:column;align-items:flex-start;gap:3px;padding:11px 13px;background:var(--white);border:1px solid var(--gray-300);border-radius:var(--radius);cursor:pointer;font-family:inherit;text-align:left;transition:all .12s;}
+    .pa-btn:hover{border-color:var(--navy-2);box-shadow:var(--shadow-sm);}
+    .pa-btn.active{border-color:var(--gold);background:rgba(184,146,60,.08);box-shadow:var(--shadow-sm);}
+    .pa-btn .pa-name{font-size:13px;font-weight:600;color:var(--navy);display:flex;align-items:center;gap:7px;width:100%;}
+    .pa-btn .pa-desc{font-size:11px;color:var(--text-light);line-height:1.4;}
+    .pa-btn.active .pa-name::after{content:'\2713';color:var(--green);font-weight:700;margin-left:auto;}
+    .sidebar-context{padding:12px 14px;}
+    .sidebar-context .sc-label{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:6px;}
+    .sidebar-context .sc-value{font-size:13px;font-weight:600;color:var(--gold-light);line-height:1.3;}
+    .sidebar-context .sc-sub{font-size:11px;color:rgba(255,255,255,.5);margin-top:3px;line-height:1.45;}
+    .sidebar-context .sc-none{font-size:12px;color:rgba(255,255,255,.4);font-style:italic;}
+
+    /* CHANGED: [Dim 2] Tokenized multi-select for principal attorneys */
+    .tokens{display:flex;flex-wrap:wrap;gap:6px;align-items:center;min-height:34px;padding:5px 6px;border:1px solid var(--gray-300);border-radius:4px;background:white;}
+    .token{display:inline-flex;align-items:center;gap:5px;background:rgba(36,52,96,.08);color:var(--navy);font-size:12px;border-radius:4px;padding:2px 6px;}
+    .token button{border:none;background:transparent;color:var(--navy-2);cursor:pointer;font-size:13px;line-height:1;padding:0;font-family:inherit;}
+    .token-placeholder{font-size:12.5px;color:var(--gray-500);padding:2px 4px;}
+    .ms-toggle{font-size:12px;color:var(--navy-2);background:transparent;border:1px dashed var(--gray-300);border-radius:4px;padding:4px 9px;cursor:pointer;font-family:inherit;margin-top:7px;display:inline-flex;align-items:center;gap:5px;}
+    .ms-toggle:hover{border-color:var(--navy-2);}
+    .ms-list{margin-top:7px;border:1px solid var(--gray-200);border-radius:var(--radius);background:var(--white);max-height:190px;overflow-y:auto;box-shadow:var(--shadow-sm);}
+    .ms-list[hidden]{display:none;}
+    .ms-item{display:flex;align-items:center;gap:9px;padding:7px 11px;font-size:12.5px;cursor:pointer;border-bottom:1px solid var(--gray-100);}
+    .ms-item:last-child{border-bottom:none;}
+    .ms-item:hover{background:var(--gray-100);}
+    .ms-item .ms-grp{margin-left:auto;font-size:10.5px;color:var(--text-light);}
+
+    /* CHANGED: [Dim 3] Suggestion banner stack (non-blocking, dismissible) */
+    .suggest-stack{display:flex;flex-direction:column;flex-shrink:0;}
+    .suggest-stack:not(:empty){padding:10px 18px 0;}
+    .suggest{display:flex;align-items:flex-start;gap:9px;background:#fffbf0;border:1px solid #e8d89a;border-left:3px solid var(--gold);border-radius:var(--radius);padding:9px 12px;margin-bottom:8px;font-size:12px;color:var(--text-mid);line-height:1.5;}
+    .suggest i.lead{color:var(--gold);font-size:15px;margin-top:1px;flex-shrink:0;}
+    .suggest .s-text{flex:1;min-width:0;}
+    .suggest .s-dismiss{border:none;background:transparent;color:var(--text-light);cursor:pointer;font-size:15px;line-height:1;padding:0 2px;flex-shrink:0;}
+    .suggest .s-dismiss:hover{color:var(--text);}
+
+    /* CHANGED: [Dim 4] Tab status dots + completion checklist */
+    .tab-dot{width:7px;height:7px;border-radius:50%;background:var(--gray-300);flex-shrink:0;margin-left:3px;transition:background .15s;}
+    .tab-dot.yellow{background:var(--gold);}
+    .tab-dot.green{background:var(--green);}
+    .completion{display:flex;align-items:center;gap:10px;overflow-x:auto;max-width:100%;}
+    .ck-item{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;white-space:nowrap;flex-shrink:0;}
+    .ck-item .ck-mark{font-weight:700;font-size:12px;}
+    .ck-item.ok{color:var(--green);}
+    .ck-item.miss{color:var(--red);}
+
+    /* CHANGED: [Dim 5] Template controls in generate bar */
+    .gen-actions{display:flex;align-items:center;gap:9px;flex-shrink:0;}
+    .btn-secondary{display:inline-flex;align-items:center;gap:6px;background:var(--white);color:var(--navy);border:1px solid var(--gray-300);border-radius:5px;padding:8px 13px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all .12s;}
+    .btn-secondary:hover{border-color:var(--navy-2);box-shadow:var(--shadow-sm);}
+    .tpl-load{position:relative;}
+    .tpl-load[hidden]{display:none;}
+    .tpl-menu{position:absolute;bottom:calc(100% + 6px);right:0;min-width:230px;background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);box-shadow:var(--shadow-md);padding:5px;z-index:50;}
+    .tpl-menu[hidden]{display:none;}
+    .tpl-row{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:4px;}
+    .tpl-row:hover{background:var(--gray-100);}
+    .tpl-row .tpl-name{flex:1;min-width:0;font-size:12.5px;color:var(--text);cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .tpl-row .tpl-del{border:none;background:transparent;color:var(--text-light);cursor:pointer;font-size:14px;line-height:1;}
+    .tpl-row .tpl-del:hover{color:var(--red);}
+    .tpl-empty{font-size:11.5px;color:var(--text-light);padding:8px;text-align:center;}
+    .tpl-notice{font-size:10.5px;color:var(--text-light);padding:6px 8px 2px;border-top:1px solid var(--gray-100);margin-top:4px;}
+  </style>
+</head>
+<body>
+
+<div class="app">
+  <header class="app-header">
+    <div class="header-logo"><i class="ti ti-scale" aria-hidden="true"></i></div>
+    <div class="header-text">
+      <h1>Wyche Engagement Letter Generator</h1>
+      <div class="sub">Omnibus Engagement Letter &amp; Terms of Engagement</div>
+    </div>
+  </header>
+
+  <div class="app-body">
+    <!-- CHANGED: [Dim 1 / Dim 6.4] Sidebar repurposed from dead DOC_TYPES wiring to live
+         practice-area context. There is only one document type, so it is now a static
+         label; the context panel below reflects the selected practice area. -->
+    <nav class="sidebar" aria-label="Document context">
+      <div class="sidebar-label">Document Type</div>
+      <div id="docTypeList"></div>
+      <div class="sidebar-context" id="sidebarContext"></div>
+    </nav>
+
+    <div class="main">
+      <!-- CHANGED: [Dim 4] Each tab carries a status dot (gray/yellow/green) derived from validate() -->
+      <div class="tab-bar" role="tablist">
+        <button class="tab-btn active" data-tab="matter" role="tab"><i class="ti ti-clipboard-list"></i> Matter &amp; Client <span class="tab-dot" data-dot="matter"></span></button>
+        <button class="tab-btn" data-tab="fees" role="tab"><i class="ti ti-cash"></i> Fees &amp; Retainer <span class="tab-dot" data-dot="fees"></span></button>
+        <button class="tab-btn" data-tab="options" role="tab"><i class="ti ti-adjustments"></i> Optional Provisions <span class="section-badge" id="sectionBadge">0</span> <span class="tab-dot" data-dot="options"></span></button>
+        <button class="tab-btn" data-tab="preview" role="tab"><i class="ti ti-eye"></i> Preview</button>
+      </div>
+
+      <!-- CHANGED: [Dim 3] Non-blocking contextual suggestion banner stack -->
+      <div class="suggest-stack" id="suggestStack"></div>
+
+      <div class="tab-panels">
+
+        <!-- ========== MATTER & CLIENT ========== -->
+        <div class="tab-panel active" id="panel-matter">
+
+          <!-- CHANGED: [Dim 1] Practice-area selector — first decision. Pre-populates sensible
+               defaults (fee type, retainer, standard provisions, anticipated-services text)
+               without locking any field. Rendered from PRACTICE_PROFILES. -->
+          <div class="card">
+            <div class="card-header"><span class="card-header-title">Practice Area</span></div>
+            <div class="card-body">
+              <p class="help">Choose the practice group for this matter. This pre-fills sensible defaults — fee type, retainer, and standard provisions — that you can override at any point. Changing it later re-applies those defaults.</p>
+              <div class="pa-grid" id="practiceAreaGrid"></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="card-header-title">Client Type</span></div>
+            <div class="card-body">
+              <p class="help">This is the first decision and it drives the salutation, the scope disclaimer, the conflicts language, and the signature block.</p>
+              <div class="seg" id="clientTypeSeg">
+                <button data-val="entity" class="active">Entity / Organization</button>
+                <button data-val="individual">Individual</button>
+              </div>
+
+              <div class="cond" id="condEntity">
+                <div class="grid-2">
+                  <div class="field full">
+                    <label for="clientName">Client / Entity Name <span class="req">*</span></label>
+                    <input type="text" id="clientName" placeholder="e.g. Acme Holdings, LLC"/>
+                  </div>
+                  <div class="field full">
+                    <label class="toggle-name" style="font-size:12px;color:var(--text-light)">
+                      <span class="toggle" style="margin-top:0">
+                        <input type="checkbox" id="hasAffiliates">
+                        <span class="toggle-track"></span>
+                      </span>
+                      Representation includes affiliated entities
+                    </label>
+                  </div>
+                  <div class="field full cond" id="condAffiliates" hidden>
+                    <label for="affiliatedEntities">Affiliated Entities (comma-separated)</label>
+                    <textarea id="affiliatedEntities" rows="2" placeholder="Acme Development, LLC, Acme Investors, LLC"></textarea>
+                  </div>
+                </div>
+              </div>
+
+              <div class="cond" id="condIndividual" hidden>
+                <div class="field full">
+                  <label for="clientNameInd">Client Name <span class="req">*</span></label>
+                  <input type="text" id="clientNameInd" placeholder="e.g. Jane Q. Client"/>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="card-header-title">Client Contact &amp; Delivery</span></div>
+            <div class="card-body">
+              <div class="grid-2">
+                <div class="field"><label for="contactName">Contact Name</label><input type="text" id="contactName" placeholder="e.g. Stephen Navarro"/></div>
+                <div class="field"><label for="contactTitle">Contact Title</label><input type="text" id="contactTitle" placeholder="e.g. President &amp; CEO"/></div>
+                <div class="field"><label for="salutation">Salutation</label><input type="text" id="salutation" placeholder="e.g. Steve"/></div>
+                <div class="field"><label for="contactEmail">Contact Email</label><input type="email" id="contactEmail" placeholder="contact@example.com"/></div>
+                <div class="field full"><label for="clientAddr">Mailing Address</label><textarea id="clientAddr" rows="2" placeholder="355 S. Main St., Suite 903&#10;Greenville, SC 29601"></textarea></div>
+                <div class="field full">
+                  <label for="deliveryMethod">Delivery Method</label>
+                  <select id="deliveryMethod">
+                    <option value="">— none shown —</option>
+                    <option>Via electronic mail</option>
+                    <option>Via hand delivery</option>
+                    <option>Via U.S. Mail</option>
+                    <option>By electronic mail and regular mail</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="card-header-title">Matter &amp; Scope</span></div>
+            <div class="card-body">
+              <div class="grid-2">
+                <div class="field full"><label for="matterDesc">Matter Description <span class="req">*</span></label><input type="text" id="matterDesc" placeholder="e.g. a commercial real estate acquisition in Greenville County"/></div>
+                <div class="field"><label for="engDate">Engagement Date <span class="req">*</span></label><input type="date" id="engDate"/></div>
+                <!-- CHANGED: [Dim 2] Free-text Responsible Attorney replaced with a structured
+                     dropdown populated from the ATTORNEYS roster. Selecting an attorney auto-fills
+                     title, email, phone, and the responsible-attorney hourly rate (all editable). -->
+                <div class="field"><label for="responsibleAtty">Responsible Attorney <span class="req">*</span></label><select id="responsibleAtty"></select></div>
+                <div class="field"><label for="attyTitle">Attorney Title</label><input type="text" id="attyTitle" placeholder="e.g. Member"/></div>
+                <div class="field"><label for="attyEmail">Attorney Email</label><input type="email" id="attyEmail" placeholder="jlonon@wyche.com"/></div>
+                <div class="field"><label for="attyPhone">Attorney Phone</label><input type="text" id="attyPhone" placeholder="(864) 242-8200"/></div>
+                <div class="field full"><label for="generalDesc">General Description of Services <span class="req">*</span></label><input type="text" id="generalDesc" placeholder="e.g. representation in connection with the acquisition and financing of the Property"/></div>
+                <div class="field full"><label for="anticipatedServices">Anticipated Services</label><textarea id="anticipatedServices" rows="2" placeholder="e.g. contract review, due diligence, title and survey review, closing"></textarea></div>
+              </div>
+
+              <div class="cond">
+                <label class="toggle-name" style="font-size:12px;color:var(--text-light)">
+                  <span class="toggle" style="margin-top:0"><input type="checkbox" id="hasStaffing"><span class="toggle-track"></span></span>
+                  Identify specific principal attorneys
+                </label>
+                <!-- CHANGED: [Dim 2] Principal Attorneys is now a tokenized multi-select drawn
+                     from the ATTORNEYS roster rather than a free-text field. The hidden input
+                     mirrors the selection as a grammatically-joined string for token merging. -->
+                <div class="cond" id="condStaffing" hidden>
+                  <div class="field full">
+                    <label>Principal Attorney(s)</label>
+                    <div class="tokens" id="principalTokens"></div>
+                    <button type="button" class="ms-toggle" id="principalAddBtn"><i class="ti ti-plus"></i> Add attorney</button>
+                    <div class="ms-list" id="principalList" hidden></div>
+                    <input type="hidden" id="principalAttorneys"/>
+                  </div>
+                </div>
+              </div>
+
+              <div class="cond">
+                <label class="toggle-name" style="font-size:12px;color:var(--text-light)">
+                  <span class="toggle" style="margin-top:0"><input type="checkbox" id="hasLimitedScope"><span class="toggle-track"></span></span>
+                  Add a defined scope limitation (limit to specific areas of law)
+                </label>
+                <div class="cond" id="condLimitedScope" hidden>
+                  <div class="field full" style="margin-bottom:11px"><label for="limitedScope">Scope is limited to</label><input type="text" id="limitedScope" placeholder='e.g. matters governed by South Carolina law applicable to commercial real estate transactions'/></div>
+                  <div class="field full"><label for="excludedAreas">Exclusive of</label><textarea id="excludedAreas" rows="2" placeholder="e.g. regulatory matters, taxation, securities, banking, antitrust, intellectual property, labor and employment"></textarea></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div><!-- /panel-matter -->
+
+        <!-- ========== FEES & RETAINER ========== -->
+        <div class="tab-panel" id="panel-fees">
+
+          <div class="card">
+            <div class="card-header"><span class="card-header-title">Fee Structure</span></div>
+            <div class="card-body">
+              <p class="help">Choose one. The corresponding Section 3 language is inserted and the others are omitted automatically.</p>
+              <div class="seg" id="feeTypeSeg">
+                <button data-val="hourly" class="active">Hourly</button>
+                <button data-val="flat">Flat Fee</button>
+                <button data-val="gr_retainer">GR Retainer</button>
+                <button data-val="contingency">Contingency</button>
+                <button data-val="availability">Availability Retainer</button>
+              </div>
+
+              <!-- HOURLY -->
+              <div class="cond" id="feeHourly">
+                <div class="grid-2" style="margin-bottom:11px">
+                  <div class="field"><label for="hourlyRate">Responsible Attorney Rate <span class="req">*</span></label><div class="prefix-wrap"><span class="prefix-sym">$</span><input type="number" id="hourlyRate" placeholder="850" min="0" step="0.01"/></div></div>
+                </div>
+                <div class="field" style="margin-bottom:11px"><label>Other Member Rate Range <span class="range-sublabel">(min – max / hr)</span></label><div class="rate-range"><div class="prefix-wrap"><span class="prefix-sym">$</span><input type="number" id="memberRateLow" placeholder="345"/></div><span class="rate-range-sep">—</span><div class="prefix-wrap"><span class="prefix-sym">$</span><input type="number" id="memberRateHigh" placeholder="1070"/></div><span class="rate-range-unit">/ hr</span></div></div>
+                <div class="field" style="margin-bottom:11px"><label>Associate Rate Range <span class="range-sublabel">(min – max / hr)</span></label><div class="rate-range"><div class="prefix-wrap"><span class="prefix-sym">$</span><input type="number" id="assocRateLow" placeholder="300"/></div><span class="rate-range-sep">—</span><div class="prefix-wrap"><span class="prefix-sym">$</span><input type="number" id="assocRateHigh" placeholder="450"/></div><span class="rate-range-unit">/ hr</span></div></div>
+                <div class="field"><label>Paralegal Rate Range <span class="range-sublabel">(min – max / hr)</span></label><div class="rate-range"><div class="prefix-wrap"><span class="prefix-sym">$</span><input type="number" id="paraRateLow" placeholder="265"/></div><span class="rate-range-sep">—</span><div class="prefix-wrap"><span class="prefix-sym">$</span><input type="number" id="paraRateHigh" placeholder="320"/></div><span class="rate-range-unit">/ hr</span></div></div>
+
+                <div class="cond">
+                  <label class="toggle-name" style="font-size:12px;color:var(--text-light)">
+                    <span class="toggle" style="margin-top:0"><input type="checkbox" id="hasDiscount"><span class="toggle-track"></span></span>
+                    Add discounted-rate courtesy language
+                  </label>
+                  <div class="cond" id="condDiscount" hidden>
+                    <div class="grid-2">
+                      <div class="field"><label for="discountRate">Discounted Rate (resp. atty)</label><div class="prefix-wrap"><span class="prefix-sym">$</span><input type="number" id="discountRate" placeholder="700"/></div></div>
+                      <div class="field"><label for="otherAttyName">Other Attorney Name</label><input type="text" id="otherAttyName" placeholder="e.g. Brittany Arsiniega"/></div>
+                      <div class="field"><label for="otherDiscountRate">Other Atty Discounted Rate</label><div class="prefix-wrap"><span class="prefix-sym">$</span><input type="number" id="otherDiscountRate" placeholder="615"/></div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- FLAT -->
+              <div class="cond" id="feeFlat" hidden>
+                <div class="field" style="margin-bottom:11px"><label for="flatFee">Flat Fee Amount <span class="req">*</span></label><div class="prefix-wrap"><span class="prefix-sym">$</span><input type="number" id="flatFee" placeholder="15000"/></div></div>
+                <div class="field"><label for="flatFeeScope">The Flat Fee covers</label><textarea id="flatFeeScope" rows="2" placeholder="e.g. preparation and negotiation of the purchase agreement and closing of the transaction"></textarea></div>
+              </div>
+
+              <!-- GR RETAINER -->
+              <div class="cond" id="feeGr" hidden>
+                <div class="grid-2" style="margin-bottom:11px">
+                  <div class="field"><label for="grAmount">GR Retainer Amount <span class="req">*</span></label><div class="prefix-wrap"><span class="prefix-sym">$</span><input type="number" id="grAmount" placeholder="5000"/></div></div>
+                  <div class="field"><label for="grPeriod">Per Period</label><select id="grPeriod"><option>month</option><option>quarter</option><option>year</option></select></div>
+                  <div class="field full"><label for="grDate">Commencing On</label><input type="text" id="grDate" placeholder="e.g. January 1, 2026"/></div>
+                </div>
+                <div class="field full" style="margin-bottom:11px"><label for="grScope">Retainer covers</label><textarea id="grScope" rows="2" placeholder='e.g. day-to-day matters including general consultation, routine correspondence, telephone calls, office conferences, and advice not requiring extended research'></textarea></div>
+                <div class="field full"><label for="grExcluded">Exceptional services billed separately</label><textarea id="grExcluded" rows="2" placeholder='e.g. litigation, significant transactions, property acquisitions or dispositions, financings, formal written legal opinions'></textarea></div>
+              </div>
+
+              <!-- CONTINGENCY -->
+              <div class="cond" id="feeContingency" hidden>
+                <p class="help">Inserts the full (a)–(k) contingency waterfall verbatim, including the lien/security interest, termination, and just-cause provisions.</p>
+                <div class="grid-2">
+                  <div class="field"><label for="presuitPct">Pre-Suit Percentage <span class="req">*</span></label><div class="prefix-wrap"><input type="number" id="presuitPct" placeholder="33.33" style="padding-left:10px"/></div></div>
+                  <div class="field"><label for="postsuitPct">Post-Suit Percentage <span class="req">*</span></label><div class="prefix-wrap"><input type="number" id="postsuitPct" placeholder="40"/></div></div>
+                </div>
+              </div>
+
+              <!-- AVAILABILITY -->
+              <div class="cond" id="feeAvailability" hidden>
+                <p class="help"><strong>SC RPC 1.5(f).</strong> Immediately earned, not held in trust. The five-point statutory notice is inserted automatically.</p>
+                <div class="field"><label for="availAmount">Availability Retainer Amount <span class="req">*</span></label><div class="prefix-wrap"><span class="prefix-sym">$</span><input type="number" id="availAmount" placeholder="125000"/></div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="card-header-title">Section 4 — Retainer</span></div>
+            <div class="card-body">
+              <p class="help">Independent of the fee structure above. Choose how the matter retainer (if any) is handled.</p>
+              <div class="seg" id="retainerSeg">
+                <button data-val="none" class="active">None shown</button>
+                <button data-val="evergreen">Evergreen</button>
+                <button data-val="onetime">One-Time</button>
+                <button data-val="waived">Waived</button>
+                <button data-val="insured">Insured</button>
+              </div>
+              <div class="cond" id="condRetainerAmount" hidden>
+                <div class="field"><label for="retainerAmount">Retainer Amount <span class="req">*</span></label><div class="prefix-wrap"><span class="prefix-sym">$</span><input type="number" id="retainerAmount" placeholder="10000"/></div></div>
+              </div>
+              <div class="cond" id="condInsured" hidden>
+                <div class="field"><label for="insuranceCarrier">Insurance Carrier Name <span class="req">*</span></label><input type="text" id="insuranceCarrier" placeholder="e.g. Travelers"/></div>
+              </div>
+            </div>
+          </div>
+        </div><!-- /panel-fees -->
+
+        <!-- ========== OPTIONAL PROVISIONS ========== -->
+        <div class="tab-panel" id="panel-options">
+          <div class="hint-box">
+            <strong>Section 5–8 optional provisions.</strong> Toggle to include. Litigation-oriented provisions (litigation hold, social media, eDiscovery) are most appropriate for disputes; transactional matters typically omit them.
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-header-title">Optional Provisions</span></div>
+            <div class="card-body"><div id="toggleList"></div></div>
+          </div>
+        </div><!-- /panel-options -->
+
+        <!-- ========== PREVIEW ========== -->
+        <div class="tab-panel" id="panel-preview">
+          <div class="preview-outer"><div class="letter-paper" id="letterPreview">
+            <p style="text-align:center;color:var(--text-light);padding:48px 0">Fill in the matter details, then open <strong>Preview</strong>.</p>
+          </div></div>
+        </div>
+
+      </div><!-- /tab-panels -->
+
+      <!-- CHANGED: [Dim 4] Plain "missing" text replaced with an inline ✓/✗ completion checklist.
+           CHANGED: [Dim 5] Added Save / Load Template controls (localStorage). -->
+      <div class="generate-bar">
+        <div class="generate-info" id="generateInfo"><div class="completion" id="completionList">Fill in required fields to generate</div></div>
+        <div class="gen-actions">
+          <div class="tpl-load" id="tplLoadWrap" hidden>
+            <button class="btn-secondary" id="tplLoadBtn"><i class="ti ti-folder"></i> Load Template</button>
+            <div class="tpl-menu" id="tplMenu" hidden></div>
+          </div>
+          <button class="btn-secondary" id="saveTplBtn"><i class="ti ti-bookmark"></i> Save as Template</button>
+          <button class="btn-generate" id="generateBtn" disabled><i class="ti ti-download"></i> Generate Word Document</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"><i class="ti ti-check"></i><span id="toastMessage">Document downloaded</span></div>
+
+<script>
+/* ============================================================
+   CONFIGURATION
+   ============================================================ */
+const DOC_TYPES = [
+  { id:'engagement', name:'Omnibus Engagement Letter', sub:'Letter + Terms of Engagement', icon:'ti-file-text' },
+];
+
+const FIRM = {
+  name: 'WYCHE, P.A.',
+  contact: '[44 E. Camperdown Way, Greenville, SC 29601  ·  Tel: (864) 242-8200  ·  www.wyche.com]',
+};
+
+/* ============================================================
+   CHANGED: [Dim 1] PRACTICE_PROFILES
+   ------------------------------------------------------------
+   ADMINISTRATOR NOTE — practice-area defaults.
+   Each profile pre-populates sensible defaults when its card is
+   selected. NOTHING is locked; every value remains overridable.
+
+     id            internal key (also used as the practiceArea state value)
+     label         display name on the selector card
+     desc          one-line description on the card
+     feeType       default Section 3 fee structure
+                     hourly | flat | gr_retainer | contingency | availability
+     retainer      default Section 4 retainer
+                     none | evergreen | onetime | waived | insured
+     options       OPTIONS ids pre-checked as standard for the group
+     anticipated   placeholder text for the Anticipated Services field
+
+   ASSUMPTIONS (documented in changelog): hourly is the firm-wide default
+   fee type; contingency is offered as a starting point only for plaintiff/PI
+   litigation, so the Litigation profile still defaults to hourly (the most
+   common litigation arrangement) and the attorney switches to contingency
+   for PI matters. Retainer defaults: ongoing corporate work -> evergreen;
+   discrete CRE/employment matters -> one-time; insured-defense litigation ->
+   insured; tax/general -> none. Litigation pre-checks the litigation-hold,
+   eDiscovery, and social-media provisions.
+   ============================================================ */
+const PRACTICE_PROFILES = [
+  { id:'Corporate',  label:'Corporate / M&A',          desc:'Entity work, governance, transactions',
+    feeType:'hourly', retainer:'evergreen', options:['jointConflict'],
+    anticipated:'entity formation and governance, contract drafting and negotiation, due diligence review, and closing of the transaction' },
+  { id:'CRE',        label:'Commercial Real Estate',    desc:'Acquisitions, financing, leasing',
+    feeType:'hourly', retainer:'onetime', options:[],
+    anticipated:'contract review, due diligence, title and survey review, and closing' },
+  { id:'Litigation', label:'Litigation',                desc:'Disputes, trial, appeals',
+    feeType:'hourly', retainer:'insured', options:['litigationHold','ediscovery','socialMedia'],
+    anticipated:'case assessment, pleadings, written and electronic discovery, depositions, motion practice, and trial preparation' },
+  { id:'Employment', label:'Employment',                desc:'Counseling, policies, disputes',
+    feeType:'hourly', retainer:'onetime', options:['litigationHold'],
+    anticipated:'review of employment policies and agreements, counseling on personnel matters, and representation in administrative and litigation proceedings' },
+  { id:'Tax',        label:'Tax',                        desc:'Planning, controversy, compliance',
+    feeType:'hourly', retainer:'none', options:[],
+    anticipated:'tax planning and structuring, compliance review, and representation before federal and state taxing authorities' },
+  { id:'General',    label:'General / Other',            desc:'Any other practice group',
+    feeType:'hourly', retainer:'none', options:[],
+    anticipated:'' },
+];
+
+/* ============================================================
+   CHANGED: [Dim 2] ATTORNEYS roster
+   ------------------------------------------------------------
+   ADMINISTRATOR NOTE — THIS IS WHERE THE FIRM ADMINISTRATOR
+   UPDATES THE ATTORNEY ROSTER. Add, remove, or edit entries below.
+   The Responsible Attorney dropdown and the Principal Attorneys
+   multi-select are both generated from this array.
+
+   Each entry:
+     name           'First Last' (appears in the dropdown and merges into the letter)
+     title          'Member' | 'Associate' | 'Of Counsel'
+     email          firm email address
+     phone          direct line
+     rate           standard hourly rate (USD) — auto-fills the responsible-attorney rate
+     practiceGroup  'CRE' | 'Corporate' | 'Litigation' | 'Employment' | 'Tax' | 'General'
+
+   NOTE: names/rates below are REPRESENTATIVE PLACEHOLDERS for a realistic
+   firm structure. Replace with the live roster before firm-wide rollout.
+   ============================================================ */
+const ATTORNEYS = [
+  { name:'Josh Lonon',        title:'Member',     email:'jlonon@wyche.com',     phone:'(864) 242-8208', rate:850, practiceGroup:'CRE' },
+  { name:'Brittany Arsiniega',title:'Associate',  email:'barsiniega@wyche.com', phone:'(864) 242-8211', rate:450, practiceGroup:'CRE' },
+  { name:'Marshall Winn',     title:'Member',     email:'mwinn@wyche.com',      phone:'(864) 242-8202', rate:1070,practiceGroup:'Litigation' },
+  { name:'Wallace Lightsey',  title:'Member',     email:'wlightsey@wyche.com',  phone:'(864) 242-8204', rate:780, practiceGroup:'Litigation' },
+  { name:'Eric Amstutz',      title:'Member',     email:'eamstutz@wyche.com',   phone:'(864) 242-8206', rate:695, practiceGroup:'Corporate' },
+  { name:'Carla Wood',        title:'Associate',  email:'cwood@wyche.com',      phone:'(864) 242-8215', rate:345, practiceGroup:'Corporate' },
+  { name:'Mark Bakker',       title:'Member',     email:'mbakker@wyche.com',    phone:'(864) 242-8210', rate:640, practiceGroup:'Employment' },
+  { name:'Meliah Bowers Jefferson', title:'Of Counsel', email:'mjefferson@wyche.com', phone:'(864) 242-8219', rate:560, practiceGroup:'Employment' },
+  { name:'Henry Parr',        title:'Of Counsel', email:'hparr@wyche.com',      phone:'(864) 242-8203', rate:590, practiceGroup:'Tax' },
+  { name:'Ted Gentry',        title:'Member',     email:'tgentry@wyche.com',    phone:'(864) 242-8221', rate:620, practiceGroup:'General' },
+];
+
+/* ============================================================
+   CHANGED: [Dim 2] RATE_SCHEDULE
+   ------------------------------------------------------------
+   ADMINISTRATOR NOTE — firm rate schedule by timekeeper class.
+   Auto-populates the hourly fee panel rate ranges (still editable).
+   UPDATE ANNUALLY EACH JANUARY when the firm's rates are reconsidered
+   (Terms of Engagement, Section 3 — "reconsidered annually, with changes
+   effective January 1st of each year"). Values are SC-market placeholders.
+   ============================================================ */
+const RATE_SCHEDULE = {
+  memberLow: 345, memberHigh: 1070,
+  assocLow:  300, assocHigh:  450,
+  paraLow:   265, paraHigh:   320,
+};
+
+/* ============================================================
+   CHANGED: [Dim 6.6] DOCX STATIC XML
+   ------------------------------------------------------------
+   These four functions return fixed OOXML package parts. They are pure
+   constants with no dependency on form state, so they are grouped here
+   near the top (moved out of the generation logic further below).
+   Do not edit unless you understand the Open Packaging Conventions.
+   ============================================================ */
+const makeContentTypes=()=>`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>`;
+const makeRootRels=()=>`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`;
+const makeDocRels=()=>`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`;
+const makeStyles=()=>`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/><w:sz w:val="24"/><w:szCs w:val="24"/><w:lang w:val="en-US"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="160" w:line="276" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/></w:style></w:styles>`;
+
+/* ============================================================
+   CHANGED: [Dim 6.5] OPTIONS — JSDoc added.
+   ------------------------------------------------------------
+   ADMINISTRATOR NOTE — optional provisions (Sections 5–8).
+   Each entry maps to a verbatim clause in CLAUSES via `clause`.
+   To add a provision: add a verbatim clause to CLAUSES, then add an
+   entry here with a matching `clause` key. `fields` declares sub-inputs
+   whose values merge into the clause via {{TOKEN}} placeholders.
+   Do not edit existing name/desc/badge text (approved copy).
+   ============================================================ */
+/* Optional provisions (Sections 5–8). Each maps to a verbatim clause in CLAUSES.
+   `fields` declares sub-inputs to merge into the clause. */
+const OPTIONS = [
+  { id:'thirdParty', clause:'third_party', heading:null, badge:'Billing', badgeCss:'background:#dbeafe;color:#1e40af',
+    name:'Third-Party / Related-Entity Payment', desc:'A related entity or third party pays the fees on the Client\u2019s behalf.',
+    fields:[{id:'payingEntity',label:'Paying Entity Name',token:'PAYING_ENTITY'}] },
+  { id:'ebilling', clause:'ebilling', heading:null, badge:'Billing', badgeCss:'background:#dbeafe;color:#1e40af',
+    name:'e-Billing Requirements', desc:'Client has e-billing or other specific financial requirements.' },
+  { id:'ediscovery', clause:'ediscovery_costs', heading:null, badge:'Litigation', badgeCss:'background:#fee2e2;color:#991b1b',
+    name:'eDiscovery Cost Allocation', desc:'Litigation/investigation involving electronically stored information.' },
+  { id:'jointConflict', clause:'conflict_joint', heading:null, badge:'Conflicts', badgeCss:'background:#ede9fe;color:#5b21b6',
+    name:'Joint / Multiple-Entity Representation', desc:'Representing multiple clients or affiliated entities jointly (RPC 1.7 disclosure).' },
+  { id:'specificConflict', clause:'conflict_specific', heading:null, badge:'Conflicts', badgeCss:'background:#ede9fe;color:#5b21b6',
+    name:'Specific Conflict Waiver', desc:'A specific potential or actual conflict requires informed consent under RPC 1.7.',
+    fields:[{id:'specificConflictText',label:'Description, risks/benefits, and basis for informed consent',token:'SPECIFIC_CONFLICT',full:true,area:true}] },
+  { id:'litigationHold', clause:'litigation_hold', heading:null, badge:'Litigation', badgeCss:'background:#fee2e2;color:#991b1b',
+    name:'Document Preservation / Litigation Hold', desc:'Litigation or investigation matters requiring an ESI preservation duty.' },
+  { id:'socialMedia', clause:'social_media', heading:null, badge:'Litigation', badgeCss:'background:#fee2e2;color:#991b1b',
+    name:'Social Media & Public Communications', desc:'Sensitive matters where social-media activity could affect the case.' },
+];
+
+/* ============================================================
+   CHANGED: [Dim 6.5] CLAUSES — JSDoc added.
+   ------------------------------------------------------------
+   ADMINISTRATOR NOTE — the approved clause library. Each value is the
+   VERBATIM, attorney-approved text for a section of the engagement letter
+   or Terms of Engagement. {{TOKEN}} placeholders are filled at render time
+   from the form (see collect() / merge()). Keys are referenced by buildModel(),
+   OPTIONS[].clause, and the fee/retainer logic.
+   DO NOT alter the wording of any value here without legal/partner sign-off;
+   to change which clauses appear, edit buildModel() or OPTIONS instead.
+   ============================================================ */
+/* CLAUSE LIBRARY — verbatim text ported from the v3 omnibus letter.
+   Injected below as CLAUSES. */
+const CLAUSES = {
+  "opening_entity": "Thank you for giving Wyche, P.A. (\"Wyche\" or the \"Firm\"), the opportunity to represent {{CLIENT_NAME}}{{AFFILIATES_CLAUSE}} (collectively, the \"Client\") in connection with {{MATTER_DESCRIPTION}} (the \"Matter\"). Once executed, this engagement letter (the \"Agreement\") will confirm the attorney-client relationship between Wyche and the Client. Attached are the Firm's Terms of Engagement, which are incorporated by reference as part of this Agreement. Please read this Agreement and the Terms of Engagement carefully before signing and returning them to us.",
+  "opening_individual": "Thank you for giving Wyche, P.A. (\"Wyche\" or the \"Firm\"), the opportunity to represent {{CLIENT_NAME}} (\"you\" or the \"Client\") in connection with {{MATTER_DESCRIPTION}} (the \"Matter\"). Once executed, this engagement letter (the \"Agreement\") will confirm the attorney-client relationship between Wyche and the Client. Attached are the Firm's Terms of Engagement, which are incorporated by reference as part of this Agreement. Please read this Agreement and the Terms of Engagement carefully before signing and returning them to us.",
+  "affiliates": " and its affiliated entities, including without limitation {{AFFILIATED_ENTITIES}},",
+  "entity_authorization": "By signing this Agreement, you confirm that you have authorization to bind the Client to the terms set forth herein.",
+  "scope_base": "The scope of our engagement is expressly limited to the Matter described above (the \"Services\"). Wyche has not been retained to represent the Client on any other matters outside the scope of this Agreement.",
+  "scope_entity_disclaimer": "Our representation extends solely to the Client as defined above. We do not represent, and will not be deemed to represent, any individual members, partners, investors, equity holders, managers, officers, directors, employees, agents, advisors, or guarantors of the Client, whether in their individual capacities or otherwise, in connection with this representation.",
+  "scope_defined_limitation": "Unless otherwise agreed in writing, the scope of our Services is limited to {{LIMITED_SCOPE}} and is exclusive of {{EXCLUDED_AREAS}}. The Services do not include representation of you in any litigation, which would need to be separately negotiated.",
+  "scope_services": "We understand the scope of our engagement will include {{GENERAL_DESCRIPTION}} (the \"Services\"). The scope of the Services may vary, but we anticipate the Services to include {{ANTICIPATED_SERVICES}}. The Client will provide Wyche with information and documents as necessary to perform the Services, make decisions and determinations as are necessary or appropriate to facilitate the Services, keep Wyche informed of relevant developments in a timely manner, and remain in communication and be available to assist us in the Services.",
+  "staffing_base": "{{RESPONSIBLE_ATTORNEY}} will serve as the primary attorney responsible for this engagement. Although {{RESPONSIBLE_ATTORNEY}} will be primarily responsible, the Services may be performed by other lawyers and paralegals in this Firm as appropriate, or otherwise necessary for expertise, cost efficiency, or availability. You may be assured that none of the professional services we provide will be duplicative or otherwise unnecessary, as we do not believe it is appropriate to conduct our practice in that manner.",
+  "staffing_specific": "We expect that the principal attorneys involved in this matter will be {{PRINCIPAL_ATTORNEYS}}.",
+  "fee_hourly": "In consideration for the Services, Wyche will bill the Client on an hourly basis. {{RESPONSIBLE_ATTORNEY}}’s current rate is ${{HOURLY_RATE}} per hour. Work may also be performed by other members of the Firm at rates currently ranging from ${{MEMBER_RATE_LOW}} to ${{MEMBER_RATE_HIGH}} per hour, by associates whose hourly rates currently range from ${{ASSOC_RATE_LOW}} to ${{ASSOC_RATE_HIGH}} per hour, and by paralegals whose hourly rates currently range from ${{PARA_RATE_LOW}} to ${{PARA_RATE_HIGH}} per hour. As is customary, the minimum hourly charge for any service rendered will be one-tenth of one hour.",
+  "fee_discounted": "As a courtesy, we will provide Services at discounted rates. {{RESPONSIBLE_ATTORNEY}}’s current discounted hourly rate is ${{DISCOUNT_RATE}} per hour, and {{OTHER_ATTORNEY}}’s discounted hourly rate is ${{OTHER_DISCOUNT_RATE}} per hour. Our paralegals’ hourly rates currently range from ${{PARA_RATE_LOW}} to ${{PARA_RATE_HIGH}} per hour. Other attorneys may provide Services at their then-current discounted hourly rates.",
+  "fee_flat": "For the Services described in Section 1 above, the Client agrees to pay a flat fee of ${{FLAT_FEE}} (the \"Flat Fee\"). The Flat Fee covers {{FLAT_FEE_SCOPE}}. For matters that fall outside the scope of the Flat Fee, Wyche will bill the Client on an hourly basis at the rates set forth in an addendum to this Agreement or as otherwise agreed in writing. In some circumstances, as appropriate, we may charge flat fees for preparation of particular legal documents rather than hourly rates, when we are utilizing document forms and legal language developed over time in our law practice as a result of valuable experience, legal research, and specific expertise.",
+  "fee_gr_retainer": "The Client agrees to pay a General Representation Retainer in the amount of ${{GR_RETAINER_AMOUNT}} per {{GR_RETAINER_PERIOD}} (the \"Retainer\"), commencing on {{GR_RETAINER_DATE}}. The Retainer covers {{GR_RETAINER_SCOPE}}. Illustrative of services of an exceptional nature to be separately billed include {{GR_RETAINER_EXCLUDED}}. Matters outside the scope of the Retainer will be billed on an hourly basis at the rates set forth in an addendum to this Agreement or as otherwise agreed.",
+  "fee_contingency_intro": "The Client agrees to pay Wyche, as a contingency fee, a percentage of whatever amount, if any, is obtained by the Client in connection with the Matter, whether through judgment, settlement, or otherwise, as follows:",
+  "fee_contingency_items": [
+    "(a) In the event that a recovery or settlement is obtained before suit is filed, the percentage shall be {{PRESUIT_PCT}}% of the gross recovery or settlement.",
+    "(b) In the event that a recovery or settlement is obtained after suit is filed, the percentage shall be {{POSTSUIT_PCT}}% of the gross recovery or settlement.",
+    "(c) In the event that the consideration the Client receives is not a liquidated amount but is some other type of consideration, the fair value of the consideration to the Client shall be included along with all other consideration for purposes of determining the contingency fee.",
+    "(d) In the event that Wyche ceases to represent the Client for any reason, Wyche shall be entitled to such portion of the contingency fee as shall be represented by the ratio of the total hours of legal services provided by Wyche to the total hours of legal services provided for the Matter altogether as of the time of recovery.",
+    "(e) In addition to the contingency fee set forth above, the Client agrees that Wyche shall receive any and all court-awarded attorneys' fees payable by other parties that are awarded based on services provided by Wyche.",
+    "(f) Wyche will advance all court costs and litigation expenses in connection with the Matter, the repayment of which will be made from any recovery obtained for the Client. If no recovery is obtained, the Client will not be responsible for any out-of-pocket costs and expenses incurred by Wyche in handling the Matter.",
+    "(g) In calculating the contingency fee, the applicable percentage shall be applied to the amount of any settlement or recovery, and the resulting amount will be paid to Wyche as attorneys' fees; then, any amounts due for costs advanced will be reimbursed to Wyche; and thereafter, the remainder will be paid to the Client.",
+    "(h) The Client hereby grants Wyche a lien on and security interest in any judgment, settlement proceeds, or any other consideration received by the Client in connection with the Matter, and the file materials for the Matter. This lien and security interest shall secure the amounts due to Wyche under this Agreement.",
+    "(i) The Client agrees not to make any settlement without first consulting with Wyche. Wyche cannot guarantee the results of these services or the outcome of any particular undertaking. The Client acknowledges that Wyche has not made any guarantees regarding the successful outcome of the Matter, and that Wyche has advised the Client that should the Client not prevail, there is a risk that a court could assess the prevailing party's costs and attorneys' fees against the Client.",
+    "(j) Should the Client elect to abandon any litigation of the Matter, should the Client's conduct seriously prejudice the prospects of successful prosecution, should there be any failure to disclose material facts that seriously prejudices the continued prosecution, or should the Client otherwise breach this Agreement, then Wyche shall have the right to terminate this Agreement and to demand and receive payment for its services at standard hourly rates as well as all unreimbursed expenses, or at its option the contingency fees set forth above. Should it become the opinion of Wyche that further prosecution of the Client's claims would be imprudent or uneconomical, then Wyche may, upon the granting of any requisite leave of court, terminate this Agreement and be relieved of any obligation to participate further. The Client will have no obligation to Wyche in that event.",
+    "(k) The Client may elect to terminate representation by Wyche for just cause at any time prior to recovery. The term \"just cause\" shall mean a substantial failure by Wyche to represent the Client in a competent and diligent manner as contemplated by the South Carolina Rules of Professional Conduct. In the event that the Client elects to terminate this Agreement without just cause and/or with the intent to deprive Wyche of the contingency fees provided for herein, Wyche shall have the right to enforce this contingency fee agreement or to recover as provided in subparagraph (j) above."
+  ],
+  "fee_availability": "The Client agrees to pay an Availability Retainer in the amount of ${{AVAIL_RETAINER_AMOUNT}}. Pursuant to South Carolina Rule of Professional Conduct 1.5(f), the Client is hereby notified as follows: (1) the nature of this fee arrangement is a retainer to secure the Firm's immediate availability to handle the Matter and in recognition that the Firm will likely be required to decline representations of similarly-situated clients; the scope of the Services is as described in Section 1 above; (2) the total amount of the Availability Retainer is ${{AVAIL_RETAINER_AMOUNT}}; (3) the Availability Retainer will be treated as immediately earned upon receipt and will not be held in a trust account; (4) the Client has the right to terminate this Agreement and the attorney-client relationship at any time; and (5) the Client may be entitled to a refund of all or a portion of the Availability Retainer if the agreed-upon legal services are not provided.",
+  "retainer_evergreen": "The Client agrees to provide and maintain a retainer with the Firm in the amount of ${{RETAINER_AMOUNT}} (the \"Retainer\"), against which we will charge our monthly billings of fees and costs. The Client agrees to replenish the Retainer promptly as charges are made so as to maintain the Retainer balance at ${{RETAINER_AMOUNT}}. At the conclusion of our representation, we will apply the final charges from the Retainer balance and, as appropriate, refund any remaining balance to the Client or render a statement for any balance due to us. The Retainer will be deposited into the Firm's client trust account in accordance with South Carolina Rule of Professional Conduct 1.15.",
+  "retainer_onetime": "The Client agrees to provide an initial retainer in the amount of ${{RETAINER_AMOUNT}}, which shall at all times be available to be applied to the balance of any outstanding fees and costs. At the termination of the engagement, if the balances of all our invoices have been paid, all amounts that remain in the Retainer will be refunded. The Retainer will be deposited into the Firm's client trust account in accordance with South Carolina Rule of Professional Conduct 1.15.",
+  "retainer_waived": "No initial retainer is required for this engagement. As a courtesy to you, we are not requiring the maintenance of a retainer in this representation.",
+  "retainer_insured": "We understand that your defense in this matter is provided under a policy of insurance issued by {{INSURANCE_CARRIER}}. As a courtesy to you, we will not require the maintenance of a retainer in this representation and will not look to you personally for payment of our statements so long as the insurance carrier pays them. Notwithstanding the foregoing, the Client remains ultimately responsible for all fees, costs, and expenses incurred in this representation, and nothing in this paragraph shall be construed as releasing the Client from that obligation should the insurance carrier fail to pay.",
+  "ebilling": "To the extent that the Client may have e-billing or other specific requirements related to the financial arrangement for our services, we ask that those be provided to us as soon as possible. We will work diligently to meet those requirements, and would request that you let us know promptly of any shortcomings on our part so that they can be corrected.",
+  "third_party": "We understand that, while our client in this matter is {{CLIENT_NAME}}, payment for our services will be made by {{PAYING_ENTITY}}. The Client's consent to this arrangement confirms that such third-party payment will not affect the Client's right to direct the representation, and that Wyche's professional obligations, including the duty of confidentiality, run to the Client and not to the paying entity.",
+  "ediscovery_costs": "In the course of this representation, it may be necessary to identify, preserve, collect, process, review, analyze, produce, or present electronically stored information (\"ESI\"), including emails, documents, databases, text messages, audio files, video files, and other digital materials (collectively, \"eDiscovery\"). The Client agrees that it is responsible for all reasonable costs and expenses associated with eDiscovery, whether incurred by Wyche or by third-party vendors engaged on the Client's behalf. Such costs may include, without limitation: data collection and preservation; forensic services; data processing; hosting and storage; document review platforms; analytics or artificial-intelligence-assisted review tools; production and export costs; and related project management or consulting services.",
+  "conflict_joint": "In our joint representation of the Client, each individual and entity included in the Client will be treated equally during the engagement. However, it is possible for conflicts of interest to arise among multiple clients of the same attorney or law firm, whatever the nature of the matter, and this matter is no exception. We are presently unaware of any facts — such as divergent or unique interests among the individuals and entities included as the Client — that would raise actual conflicts of interest, either now existing or reasonably foreseeable, that would interfere with our ability to represent them on a common or joint basis. In the event that we become aware of facts that result in a conflict of interest with one of them, we will withdraw from representation of that one and continue with the representation of the other individuals or entities, as the case may be. Each of the individuals and entities included in the Client agrees that he, she, or it has been advised of this multiple representation and the theoretical possibility of conflicts, and each hereby provides informed consent and waives the same. Any of these individuals or entities may wish to obtain the independent advice of an attorney as to whether to enter into this multiple representation.",
+  "conflict_specific": "{{SPECIFIC_CONFLICT}}",
+  "litigation_hold": "It is important that the Client make reasonable efforts to preserve and retain all documents, electronic communications, and other electronically stored information that are relevant to this matter. This includes documents and information that the Client might otherwise routinely discard or destroy. To the extent the Client has any documents subject to routine destruction pursuant to a records retention policy, such policy should be suspended. Failure to preserve documents and electronically stored information could result in the loss of evidence that may be very helpful to our case and also may cause the court to impose penalties and/or sanctions against the Client. As soon as is practicable, we should discuss and prepare a formal litigation hold notice for the Client to distribute to all persons who can reasonably be expected to have relevant documents or electronic information in their possession or on their devices.",
+  "social_media": "The Client is advised that anything posted on social media platforms (including but not limited to Facebook, X/Twitter, Instagram, LinkedIn, TikTok, and similar platforms) may be discovered and used by opposing parties and may be taken out of context. We strongly advise against posting any information related to the Matter on social media, and failure to follow this advice may be grounds for Wyche to reevaluate the representation.",
+  "closing_satisfaction": "{{RESPONSIBLE_ATTORNEY}} is ultimately responsible for making sure that our work and our invoices are done properly and to your satisfaction. One of our foremost concerns is that our clients be satisfied not only with our work, but also with our fees and billing practices. We invite you to discuss our billing practices or any of our invoices with us at any time.",
+  "closing_acceptance": "Please indicate the Client's acceptance of the terms and conditions of this Agreement and the attached Terms of Engagement by signing a copy of this letter in the space provided below and returning it to us. This engagement will not take effect until you return this signed letter.",
+  "closing_thanks": "We thank you for the opportunity to represent the Client in this matter and welcome your questions or comments at any time. As always, feel free to contact me at any time.",
+  "terms_intro": "Except as modified by mutual agreement in writing, Wyche, P.A. (\"we,\" \"us,\" or the \"Firm\") and the client (\"you\" or the \"Client\") agree to the following provisions with respect to the relationship between them:",
+  "terms": [
+    {
+      "heading": "1. Respective Responsibilities of Attorney and Client",
+      "body": [
+        "We will keep you reasonably informed of significant developments arising regarding the matter or matters within the scope of our engagement (the \"Subject Matter\") and will consult with you as to our progress and issues that arise. You will be candid and cooperative with us and will keep us informed with complete and accurate factual information, documents, and other relevant communications. You will also assist us by making decisions appropriate to enable completion of the work and performance of the services. We provide only legal services. Among other things, we are not providing investment, insurance, accounting, or technical advice."
+      ]
+    },
+    {
+      "heading": "2. Fees Not Contingent; Estimates Not Binding; No Guarantee",
+      "body": [
+        "Unless otherwise specifically agreed in writing (such as in a contingency fee arrangement set forth in the engagement letter), our fees are not contingent upon the outcome or completion of a matter. It is often impractical to determine in advance the amount of effort that will be needed to complete all the necessary work on a matter or the total amount of fees and costs which may be incurred. Unless otherwise expressly agreed in writing, our estimates and budgets are not intended to be binding, are subject to unforeseen circumstances, and do not limit or \"cap\" our fees and other charges or costs. Any estimate we may give is neither a \"cap\" nor a flat fee, but merely an estimate. For any legal matter there are many unknowns, particularly at the beginning of the engagement, many of which are not within our or your control. The amount of effort required to provide the services can vary greatly based on the terms of the matter, the cooperation of the parties, and the efforts of other parties and their counsel, among other things. Thus, the final cost of a matter may significantly exceed any initial estimate. Although we will use our best efforts to represent you, we cannot guarantee the results of our work or the outcome of any particular undertaking. During our representation, we may express our opinions, views, or beliefs concerning various matters. Any such statements are intended to be an expression of opinions, views, and beliefs only, and should not be construed by you as a guarantee of any type."
+      ]
+    },
+    {
+      "heading": "3. Timely Billing and Payments; Billing Rates",
+      "body": [
+        "Fees, charges, and expenses will generally be billed monthly and are payable within thirty (30) days of presentation. You agree that you will promptly review our invoices, raise any questions regarding the amounts and items billed within thirty (30) days of presentation, and pay all amounts billed consistently with these Terms of Engagement. We reserve the right to postpone or defer providing additional services, or to discontinue our representation, if billed amounts are not paid when due. We also reserve the right to charge interest at the rate of ten percent (10%) per annum (or the maximum rate permitted by South Carolina law, whichever is less) on all sums not paid within thirty (30) days of presentation of our invoice, and you agree to pay such interest if applicable. If any statement remains unpaid for more than sixty (60) days, we may cease performing services until satisfactory arrangements have been made for payment of outstanding statements and the payment of future fees and expenses. The rates of the specific attorneys or staff involved from time to time in your matters, and the basis of all of our other charges, are available to you at any time on request. Our rates are reconsidered annually, with changes effective January 1st of each year. We will notify you of any changes in our rates before they go into effect."
+      ]
+    },
+    {
+      "heading": "4. Costs and Expenses",
+      "body": [
+        "In addition to our fees, you will be billed for costs, expenses, and other charges related to the performance of our services including, but not limited to, messengers and couriers, photocopying, desktop publishing or printing, data storage, data hosting services, litigation support technology services, computerized research, certain clerical services, filing fees (including electronic filings), abstracting fees, recording fees, court reporters, witnesses, outside experts and consultants (i.e., accountants, appraisers, or other legal counsel), travel, phone and web conferencing, and the like. We do not \"mark-up\" expenses we pay or incur on your behalf. At our option, we may direct a vendor to invoice you separately for payment, and you agree to pay such invoices in a timely manner. In the event of a very large expense, we may ask you to provide payment in advance. Notwithstanding the foregoing, we assume no obligation to advance any costs or expenses on your behalf or to pay vendors, experts, consultants, or other third parties we engage on your behalf. As with all of our fees, charges, and costs to be charged to you, additional information is available on request."
+      ]
+    },
+    {
+      "heading": "5. Disclosure of Conflicts; Advance Consent",
+      "body": [
+        "To allow us to conduct a conflict check, you represent that you have identified to us all persons and entities that are or may become involved in the Subject Matter, including all persons and entities that in any material respect are related, affiliated, or associated with you, and other involved or potentially involved parties. You also agree that you will promptly notify us if you become aware of any other persons or entities that are or may become involved in the Subject Matter.",
+        "Wyche is a full-service law firm. Because of our representation of many other clients, it is possible that a dispute may arise in the future between another client and you. Our acceptance of the current representation will preclude us from accepting future representations adverse to you which involve matters substantially related to the work we perform in the course of this engagement. However, after being advised of the potential risks and benefits and having had the opportunity to consult with independent legal counsel, you acknowledge and provide informed consent that our acceptance of this engagement shall not preclude us from representing other clients who may have interests adverse to you, with respect to matters not substantially related to the particular matters for which you have engaged our services, provided that such representation does not involve the use of confidential information obtained during this representation and does not otherwise violate our professional obligations to you under the South Carolina Rules of Professional Conduct."
+      ]
+    },
+    {
+      "heading": "6. Right to Associate Co-Counsel",
+      "body": [
+        "Wyche shall have the right, in its sole discretion, to associate co-counsel to assist in the Subject Matter. If such counsel is employed for consulting services or for discrete limited engagements (e.g., local counsel in another jurisdiction), the expenses of such counsel shall be treated as costs under Section 4. If such counsel is engaged for a more significant role, Wyche shall give written notice to you of the identity of any co-counsel, and the terms of any resulting fee division shall comply with South Carolina Rule of Professional Conduct 1.5(e) and be confirmed in writing with your consent."
+      ]
+    },
+    {
+      "heading": "7. Confidentiality, Privacy, and Electronic Communication",
+      "body": [
+        "In the course of providing our clients with legal advice, we sometimes receive confidential information from our clients. We store our electronic client file documents electronically offsite with a third-party entity, and certain physical documents are also stored offsite. In addition, while we work predominantly on secure network connections, there may be times when a public wireless connection is used. Also, we will likely engage in electronic communications with you. In order to guard this information, we maintain various physical, electronic, and procedural safeguards. If you have any questions or concerns regarding the foregoing, please let us know. Otherwise, your consent to the engagement of Wyche, P.A. will be deemed consent to the provisions regarding Confidentiality, Privacy, and Electronic Communication set forth above, including without limitation, the acknowledgement and consent to the storage of client information and documents offsite, and our use of electronic communication."
+      ]
+    },
+    {
+      "heading": "8. Use of Technology",
+      "body": [
+        "In performing services, the Firm may use legal technology tools, including but not limited to computerized legal research platforms, document management systems, data analytics tools, and artificial intelligence–assisted tools for research, document review, drafting assistance, and similar functions. All such tools are used under the supervision and professional judgment of licensed attorneys. The Firm maintains appropriate safeguards to protect the confidentiality of client information when using such tools, including evaluating vendor security practices and contractual protections. The use of technology tools does not alter the Firm's professional responsibilities to you, and all work product delivered to you reflects the professional judgment of the attorneys responsible for the engagement."
+      ]
+    },
+    {
+      "heading": "9. Attorney-Client Privilege and Confidentiality",
+      "body": [
+        "It is important for the communications between you and Wyche relating to the Subject Matter to remain confidential in order to be protected by the attorney-client privilege. Therefore, you agree not to share confidential communications with Wyche with anyone outside of the attorney-client relationship without Wyche's prior consent."
+      ]
+    },
+    {
+      "heading": "10. Termination of Representation",
+      "body": [
+        "You can terminate our services at any time. If you do, you agree to give us prompt written notice of the termination. If we are attorneys of record in any proceeding, you agree to promptly execute and return to us any Substitution of Attorney document we provide to you. We can also withdraw from this representation at any time for good cause, subject to applicable law and rules of professional conduct, including South Carolina Rules of Professional Conduct 1.16. The most common reasons for withdrawal include: (1) you fail to honor the terms of our engagement letter, including these Terms of Engagement, or fail to pay our invoices in a timely manner after reasonable notice and opportunity to cure; (2) you make it unreasonably difficult to represent you effectively or you insist on conduct contrary to our advice on a material matter; or (3) facts or circumstances arise that, in our view, render our continuing representation unlawful or unethical. If we elect to withdraw, you will take all steps necessary to free us of any obligation to perform further services, including the execution of any documents necessary to complete our withdrawal. Notwithstanding any termination or withdrawal, you will remain obligated to pay us for all services provided and to reimburse us for all costs and expenses paid or incurred on your behalf before such termination or withdrawal or which are reasonably necessary thereafter.",
+        "Our representation of you will be considered terminated at the earlier of: (1) your termination of our representation; (2) our withdrawal from our representation of you; (3) the substantial completion of our work for you, as evidenced by written notice of completion and a final bill; or (4) a substantial period of inactivity (defined as more than twelve (12) consecutive months with no substantive communication or work) with respect to the Subject Matter not caused by our action or inaction, provided we give you written notice of such termination.",
+        "We also reserve the right to refuse to assert a particular claim or allegation if, in our judgment, it is not a well-founded or viable claim or allegation or if, in the case of a judicial proceeding, the amount likely to be recovered does not justify the time and expense of litigation."
+      ]
+    },
+    {
+      "heading": "11. Professional Corporation; Limitation on Liability",
+      "body": [
+        "The firm of Wyche, P.A. is a South Carolina professional corporation. As a result, our individual members or shareholders, as distinguished from the Firm, are generally not liable to you, directly or indirectly, for debts, obligations, or liabilities that are incurred, created, or assumed by the Firm."
+      ]
+    },
+    {
+      "heading": "12. Document Retention and Destruction",
+      "body": [
+        "In the course of our representation of you, we are likely to come into possession of documents or other materials belonging to you or otherwise constituting client records, such as correspondence, pleadings, transcripts, exhibits, physical evidence, and other items reasonably necessary to your representation (collectively, \"Client Materials\"). Once the particular matter to which those Client Materials relate has been concluded, we will either (1) return the Client Materials to you at your last known address, (2) retain them in our storage, or (3) dispose of them. In the event the Client Materials are returned to you, you agree we have the right, but not the obligation, to keep a copy of the Client Materials. If you do not request the return of the Client Materials upon conclusion of the matter, in the absence of any other specific arrangements with you or legal requirements to the contrary, you agree that we may dispose of those Client Materials consistent with our records retention policy that we may have in effect from time to time without notice to you, provided that we will retain Client Materials for a minimum of six (6) years after completion or termination of the representation in accordance with South Carolina Rule of Professional Conduct 1.15(i).",
+        "Our own files pertaining to the matter will not be delivered to you. You agree that our Firm's files include, for example, Firm administrative records, time and expense reports, personnel and staffing materials, and credit and accounting records, as well as internal lawyers' work product (such as drafts, notes, internal memoranda, and legal and factual research, including investigative reports and mental impressions, prepared by us for our internal use), and our lawyers' internal communications with one another. You agree that our files remain our property and, for various reasons, including the minimization of unnecessary storage expenses, or for no reason, we may destroy or otherwise dispose of our files in a reasonable time after the conclusion of the matter without notice to you."
+      ]
+    },
+    {
+      "heading": "13. No Waiver of the Firm's Privilege",
+      "body": [
+        "From time to time, issues may arise for the Firm that raise questions under attorneys' professional conduct rules, including possible disputes with a client and conflicts of interest issues. When such issues arise, we generally seek the advice of certain of our partners who assist with these matters. We consider such internal consultations to be protected from disclosure under the attorney-client privilege. Accordingly, you agree that if the Firm determines, in its own discretion, to consult with counsel (either internal counsel or, if it chooses, outside counsel), the Firm's ongoing representation of you shall not result in a waiver of any attorney-client privilege that the Firm may have to protect the confidentiality of the Firm's communications with such internal or external counsel."
+      ]
+    },
+    {
+      "heading": "14. Fee Dispute Resolution",
+      "body": [
+        "Should any differences of opinion arise over fees or costs, you and Wyche agree that you will consult with each other in good faith in an effort to resolve the matter. If such consultation does not resolve the dispute, you are advised that the South Carolina Bar operates a Resolution of Fee Disputes Board, which provides a process for mediation of fee disputes between lawyers and clients as an alternative to litigation. Either party may submit a request for resolution through that program."
+      ]
+    },
+    {
+      "heading": "15. Application to Subsequent Matters; Miscellaneous",
+      "body": [
+        "The agreement reflected herein applies to our present representation of you and to any subsequent matters we specifically agree to undertake on your behalf in the future, unless we agree in writing to a different arrangement. You also agree to pay us on the same basis as set forth above for fees and expenses incurred in responding to subpoenas, in testifying (and preparing testimony) by deposition or otherwise, and otherwise responding with respect to claims or demands relating to the Subject Matter, whether or not related to our services and whether or not we are then representing you."
+      ]
+    },
+    {
+      "heading": "16. Governing Law; Entire Agreement; Severability",
+      "body": [
+        "This Agreement, including these Terms of Engagement, sets forth the entire agreement and understanding of the parties, and supersedes all prior agreements, promises, covenants, arrangements, communications, representations, or warranties, whether oral or written, by any officer, employee, or representative of any party. No representation or statement made on behalf of any party shall modify the terms of this Agreement unless in writing and signed by all parties. The laws of the State of South Carolina govern this Agreement and its performance. The terms of this Agreement, including these Terms of Engagement, are severable; if any provision is held to be invalid or unenforceable, the remaining provisions shall continue in full force and effect."
+      ]
+    }
+  ],
+  "sig_firm": "WYCHE, P.A."
+};
+
+/* ============================================================
+   STATE
+   ============================================================ */
+const state = {
+  practiceArea:null,            // CHANGED: [Dim 1] selected practice-area id (from PRACTICE_PROFILES)
+  clientType:'entity',
+  feeType:'hourly',
+  retainer:'none',
+  options:new Set(),
+  principalAttys:[],            // CHANGED: [Dim 2] selected principal-attorney names (tokenized)
+  dismissedSuggestions:new Set(),// CHANGED: [Dim 3] suggestion ids dismissed this session
+  visitedTabs:new Set(['matter']),// CHANGED: [Dim 4] tabs the user has opened (for dot status)
+};
+
+/* CHANGED: [Dim 5] localStorage key + cap for saved matter templates. */
+const TEMPLATES_KEY = 'wyche_engagement_templates_v1';
+const TEMPLATES_MAX = 10;
+/* CHANGED: [Dim 5] Non-client-specific fields captured by a template. Deliberately
+   EXCLUDES client-identifying fields (clientName, clientNameInd, matterDesc, contactName,
+   contactTitle, salutation, contactEmail, clientAddr, deliveryMethod, generalDesc, engDate,
+   grDate, affiliatedEntities, payingEntity, specificConflictText). */
+const TEMPLATE_FIELDS = [
+  'responsibleAtty','attyTitle','attyEmail','attyPhone',
+  'hourlyRate','memberRateLow','memberRateHigh','assocRateLow','assocRateHigh','paraRateLow','paraRateHigh',
+  'discountRate','otherAttyName','otherDiscountRate',
+  'flatFee','flatFeeScope','grAmount','grPeriod','grScope','grExcluded',
+  'presuitPct','postsuitPct','availAmount','retainerAmount','insuranceCarrier',
+  'limitedScope','excludedAreas','anticipatedServices',
+];
+/* CHANGED: [Dim 5] Boolean toggles captured by a template (client-specific hasAffiliates excluded). */
+const TEMPLATE_TOGGLES = ['hasStaffing','hasLimitedScope','hasDiscount'];
+
+const $  = id => document.getElementById(id);
+const getVal = id => { const e=$(id); return e?e.value.trim():''; };
+const fmtDollar = n => { const f=parseFloat(String(n).replace(/,/g,'')); return isNaN(f)?'':f.toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:2}); };
+const fmtDate = s => s ? new Date(s+'T12:00:00').toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}) : '';
+
+/* Merge {{TOKEN}} placeholders. Missing values become a visible [TOKEN] marker
+   in the docx (so nothing is silently dropped) and a highlighted span in preview. */
+function merge(text, data, forPreview){
+  return text.replace(/\{\{(\w+)\}\}/g, (m,key)=>{
+    const v = data[key];
+    if (v===undefined || v==='' || v===null){
+      const label = '['+key.replace(/_/g,' ')+']';
+      return forPreview ? `\u0001${label}\u0001` : label;
+    }
+    return v;
+  });
+}
+
+/* ============================================================
+   COLLECT FORM DATA -> token map
+   ============================================================ */
+function collect(){
+  const clientName = state.clientType==='entity' ? getVal('clientName') : getVal('clientNameInd');
+  const d = {
+    CLIENT_NAME: clientName,
+    MATTER_DESCRIPTION: getVal('matterDesc'),
+    RESPONSIBLE_ATTORNEY: getVal('responsibleAtty'),
+    GENERAL_DESCRIPTION: getVal('generalDesc'),
+    ANTICIPATED_SERVICES: getVal('anticipatedServices'),
+    PRINCIPAL_ATTORNEYS: getVal('principalAttorneys'),
+    LIMITED_SCOPE: getVal('limitedScope'),
+    EXCLUDED_AREAS: getVal('excludedAreas'),
+    AFFILIATED_ENTITIES: getVal('affiliatedEntities'),
+    // fees
+    HOURLY_RATE: fmtDollar(getVal('hourlyRate')),
+    MEMBER_RATE_LOW: fmtDollar(getVal('memberRateLow')),
+    MEMBER_RATE_HIGH: fmtDollar(getVal('memberRateHigh')),
+    ASSOC_RATE_LOW: fmtDollar(getVal('assocRateLow')),
+    ASSOC_RATE_HIGH: fmtDollar(getVal('assocRateHigh')),
+    PARA_RATE_LOW: fmtDollar(getVal('paraRateLow')),
+    PARA_RATE_HIGH: fmtDollar(getVal('paraRateHigh')),
+    DISCOUNT_RATE: fmtDollar(getVal('discountRate')),
+    OTHER_ATTORNEY: getVal('otherAttyName'),
+    OTHER_DISCOUNT_RATE: fmtDollar(getVal('otherDiscountRate')),
+    FLAT_FEE: fmtDollar(getVal('flatFee')),
+    FLAT_FEE_SCOPE: getVal('flatFeeScope'),
+    GR_RETAINER_AMOUNT: fmtDollar(getVal('grAmount')),
+    GR_RETAINER_PERIOD: getVal('grPeriod'),
+    GR_RETAINER_DATE: getVal('grDate'),
+    GR_RETAINER_SCOPE: getVal('grScope'),
+    GR_RETAINER_EXCLUDED: getVal('grExcluded'),
+    PRESUIT_PCT: getVal('presuitPct'),
+    POSTSUIT_PCT: getVal('postsuitPct'),
+    AVAIL_RETAINER_AMOUNT: fmtDollar(getVal('availAmount')),
+    RETAINER_AMOUNT: fmtDollar(getVal('retainerAmount')),
+    INSURANCE_CARRIER: getVal('insuranceCarrier'),
+    PAYING_ENTITY: getVal('payingEntity'),
+    SPECIFIC_CONFLICT: getVal('specificConflictText'),
+    // contact / signature
+    CONTACT_NAME: getVal('contactName'),
+    CONTACT_TITLE: getVal('contactTitle'),
+    SALUTATION: getVal('salutation') || clientName,
+    CONTACT_EMAIL: getVal('contactEmail'),
+    ATTY_TITLE: getVal('attyTitle'),
+    ATTY_EMAIL: getVal('attyEmail'),
+    ATTY_PHONE: getVal('attyPhone'),
+    ENG_DATE: fmtDate(getVal('engDate')),
+    DELIVERY: getVal('deliveryMethod'),
+    ADDR: getVal('clientAddr'),
+  };
+  // affiliates sub-clause
+  if (state.clientType==='entity' && $('hasAffiliates').checked){
+    d.AFFILIATES_CLAUSE = merge(CLAUSES.affiliates, d, false);
+  } else {
+    d.AFFILIATES_CLAUSE = '';
+  }
+  return d;
+}
+
+/* ============================================================
+   BUILD THE DOCUMENT MODEL  (carries RAW clause text + the data map)
+   Merge performed at render time. Block types:
+     meta | salut | plain | p | h | sub | firmsig | accept | break | termsTitle | th
+   ============================================================ */
+function buildModel(d){
+  const C = CLAUSES, M = [];
+  const p = (text)=>M.push({t:'p',text});
+  const h = (text)=>M.push({t:'h',text});
+
+  M.push({t:'meta', d});
+  M.push({t:'salut', text:`Dear ${d.SALUTATION || '{{SALUTATION}}'}:`});
+  p(state.clientType==='entity'?C.opening_entity:C.opening_individual);
+  if (state.clientType==='entity') p(C.entity_authorization);
+
+  h('1. Scope of Engagement');
+  p(C.scope_base);
+  if (state.clientType==='entity') p(C.scope_entity_disclaimer);
+  if ($('hasLimitedScope').checked) p(C.scope_defined_limitation);
+  p(C.scope_services);
+
+  h('2. Responsible Attorney and Staffing');
+  p(C.staffing_base);
+  if ($('hasStaffing').checked) p(C.staffing_specific);
+
+  h('3. Fees and Billing');
+  if (state.feeType==='hourly'){ p(C.fee_hourly); if ($('hasDiscount').checked) p(C.fee_discounted); }
+  else if (state.feeType==='flat'){ p(C.fee_flat); }
+  else if (state.feeType==='gr_retainer'){ p(C.fee_gr_retainer); }
+  else if (state.feeType==='contingency'){ p(C.fee_contingency_intro); C.fee_contingency_items.forEach(it=>M.push({t:'sub',text:it})); }
+  else if (state.feeType==='availability'){ p(C.fee_availability); }
+
+  if (state.retainer!=='none'){
+    h('4. Retainer');
+    if (state.retainer==='evergreen') p(C.retainer_evergreen);
+    else if (state.retainer==='onetime') p(C.retainer_onetime);
+    else if (state.retainer==='waived') p(C.retainer_waived);
+    else if (state.retainer==='insured') p(C.retainer_insured);
+  }
+
+  const billingOpts = ['thirdParty','ebilling','ediscovery'].filter(id=>state.options.has(id));
+  if (billingOpts.length){ h('5. Additional Billing and Cost Provisions'); billingOpts.forEach(id=>p(C[OPTIONS.find(x=>x.id===id).clause])); }
+
+  const conflictOpts = ['jointConflict','specificConflict'].filter(id=>state.options.has(id));
+  if (conflictOpts.length){ h('6. Conflicts of Interest'); conflictOpts.forEach(id=>p(C[OPTIONS.find(x=>x.id===id).clause])); }
+
+  if (state.options.has('litigationHold')){ h('7. Document Preservation'); p(C.litigation_hold); }
+  if (state.options.has('socialMedia')){ h('8. Social Media and Public Communications'); p(C.social_media); }
+
+  p(C.closing_satisfaction);
+  p(C.closing_acceptance);
+  p(C.closing_thanks);
+  M.push({t:'plain',text:'With kind professional regards,'});
+  M.push({t:'firmsig', d});
+  M.push({t:'accept', d});
+
+  M.push({t:'break'});
+  M.push({t:'termsTitle', text:'WYCHE, P.A. — TERMS OF ENGAGEMENT'});
+  p(C.terms_intro);
+  C.terms.forEach(sec=>{ M.push({t:'th', text:sec.heading}); sec.body.forEach(b=>p(b)); });
+  return M;
+}
+
+/* ============================================================
+   PREVIEW
+   ============================================================ */
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function phWrap(s){ return s.replace(/\u0001([^\u0001]*)\u0001/g, '<span class="ph">$1</span>'); }
+function mp(text,d){ return phWrap(esc(merge(text,d,true))); }
+
+function renderPreview(){
+  const d = collect();
+  const M = buildModel(d);
+  let html='';
+  M.forEach(blk=>{
+    if (blk.t==='meta'){
+      const m=blk.d;
+      html+=`<div class="l-firm">${FIRM.name}</div><div class="l-sub">${esc(FIRM.contact)}</div><hr class="l-rule">`;
+      html+=`<div style="margin-bottom:14px">${m.ENG_DATE?esc(m.ENG_DATE):'<span class=ph>Date</span>'}</div>`;
+      if (m.DELIVERY) html+=`<div style="margin-bottom:12px">${esc(m.DELIVERY)}</div>`;
+      let addr='';
+      addr += m.CLIENT_NAME?`<strong>${esc(m.CLIENT_NAME)}</strong><br>`:`<span class=ph>Client Name</span><br>`;
+      if (m.ADDR) m.ADDR.split('\n').filter(Boolean).forEach(l=>addr+=`${esc(l)}<br>`);
+      if (m.CONTACT_NAME) addr+=`Attn: ${esc(m.CONTACT_NAME)}${m.CONTACT_TITLE?', '+esc(m.CONTACT_TITLE):''}<br>`;
+      if (m.CONTACT_EMAIL) addr+=`Email: ${esc(m.CONTACT_EMAIL)}`;
+      html+=`<div style="margin-bottom:14px">${addr}</div>`;
+      html+=`<div style="margin-bottom:6px"><strong>Re:</strong> Engagement of Wyche, P.A. — ${m.MATTER_DESCRIPTION?esc(m.MATTER_DESCRIPTION):'<span class=ph>Matter Description</span>'}</div>`;
+      html+=`<div style="margin-bottom:16px;font-style:italic">Confidential — Privileged Communication</div>`;
+    }
+    else if (blk.t==='salut'){ html+=`<div style="margin-bottom:12px">${mp(blk.text,d)}</div>`; }
+    else if (blk.t==='plain' || blk.t==='p'){ html+=`<div class="l-body"><p>${mp(blk.text,d)}</p></div>`; }
+    else if (blk.t==='h'){ html+=`<div class="l-section-head">${esc(blk.text)}</div>`; }
+    else if (blk.t==='sub'){ html+=`<div class="l-subitem">${mp(blk.text,d)}</div>`; }
+    else if (blk.t==='firmsig'){
+      html+=`<div class="l-sig"><div>${FIRM.name}</div><div class="l-sig-line"></div>`;
+      html+=`<div>By: ${blk.d.RESPONSIBLE_ATTORNEY?esc(blk.d.RESPONSIBLE_ATTORNEY):'<span class=ph>Responsible Attorney</span>'}${blk.d.ATTY_TITLE?', '+esc(blk.d.ATTY_TITLE):''}</div>`;
+      if (blk.d.ATTY_EMAIL) html+=`<div>Email: ${esc(blk.d.ATTY_EMAIL)}</div>`;
+      if (blk.d.ATTY_PHONE) html+=`<div>Telephone: ${esc(blk.d.ATTY_PHONE)}</div>`;
+      html+=`</div>`;
+    }
+    else if (blk.t==='accept'){
+      html+=`<div class="l-accept"><strong>ACCEPTED AND AGREED:</strong>`;
+      if (state.clientType==='entity'){
+        html+=`<div style="margin-top:14px">${blk.d.CLIENT_NAME?esc(blk.d.CLIENT_NAME):'<span class=ph>Client Name</span>'}</div>`;
+        html+=`<div class="l-sig-line" style="margin-top:24px"></div><div>By: ____________________________</div><div>Name: <span class=ph>Signatory Name</span></div><div>Title: <span class=ph>Signatory Title</span></div><div>Date: ____________________</div>`;
+      } else {
+        html+=`<div class="l-sig-line" style="margin-top:24px"></div><div>${blk.d.CLIENT_NAME?esc(blk.d.CLIENT_NAME):'<span class=ph>Client Name</span>'}</div><div>Date: ____________________</div>`;
+      }
+      html+=`</div>`;
+    }
+    else if (blk.t==='break'){ html+=`<hr class="l-page-break">`; }
+    else if (blk.t==='termsTitle'){ html+=`<div class="l-terms-title">${esc(blk.text)}</div>`; }
+    else if (blk.t==='th'){ html+=`<div class="l-section-head">${esc(blk.text)}</div>`; }
+  });
+  $('letterPreview').innerHTML=html;
+}
+
+/* ============================================================
+   DOCX GENERATION
+   ============================================================ */
+function xe(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');}
+function wr(text,bold=false,under=false,size=null,color=null){
+  let rp='';
+  if(bold)rp+='<w:b/><w:bCs/>';
+  if(under)rp+='<w:u w:val="single"/>';
+  if(size)rp+=`<w:sz w:val="${size}"/><w:szCs w:val="${size}"/>`;
+  if(color)rp+=`<w:color w:val="${color}"/>`;
+  return `<w:r>${rp?`<w:rPr>${rp}</w:rPr>`:''}<w:t xml:space="preserve">${xe(text)}</w:t></w:r>`;
+}
+function wp(runs,opts={}){
+  const {center=false,before=0,after=160,justify=false,ind=0}=opts;
+  let pPr=`<w:spacing w:before="${before}" w:after="${after}"/>`;
+  if(center)pPr+='<w:jc w:val="center"/>'; else if(justify)pPr+='<w:jc w:val="both"/>';
+  if(ind)pPr+=`<w:ind w:left="${ind}"/>`;
+  const content=Array.isArray(runs)?runs.join(''):runs;
+  return `<w:p><w:pPr>${pPr}</w:pPr>${content}</w:p>`;
+}
+const wEmpty=()=>'<w:p><w:pPr><w:spacing w:before="0" w:after="0"/></w:pPr></w:p>';
+const wHR=()=>'<w:p><w:pPr><w:pBdr><w:bottom w:val="single" w:sz="6" w:space="1" w:color="1a2744"/></w:pBdr><w:spacing w:before="40" w:after="120"/></w:pPr></w:p>';
+const wBreak=()=>'<w:p><w:r><w:br w:type="page"/></w:r></w:p>';
+
+function buildDocumentXml(d){
+  const M=buildModel(d);
+  let body='';
+  M.forEach(blk=>{
+    if(blk.t==='meta'){
+      const m=blk.d;
+      body+=wp(wr(FIRM.name,true,false,36,'1a2744'),{center:true,after:40});
+      body+=wp(wr(FIRM.contact,false,false,16,'888888'),{center:true,after:60});
+      body+=wHR();
+      body+=wp(wr(m.ENG_DATE||'[Date]'),{after:200});
+      if(m.DELIVERY) body+=wp(wr(m.DELIVERY),{after:120});
+      let lines=[];
+      lines.push(wp(wr(m.CLIENT_NAME||'[Client Name]',true),{after:0}));
+      if(m.ADDR) m.ADDR.split('\n').filter(Boolean).forEach(l=>lines.push(wp(wr(l),{after:0})));
+      if(m.CONTACT_NAME) lines.push(wp(wr(`Attn: ${m.CONTACT_NAME}${m.CONTACT_TITLE?', '+m.CONTACT_TITLE:''}`),{after:0}));
+      if(m.CONTACT_EMAIL) lines.push(wp(wr(`Email: ${m.CONTACT_EMAIL}`),{after:0}));
+      body+=lines.join('');
+      body+=wEmpty();
+      body+=wp(wr('Re: ',true)+wr(`Engagement of Wyche, P.A. — ${m.MATTER_DESCRIPTION||'[Matter Description]'}`,true),{after:0});
+      body+=wp(wr('Confidential — Privileged Communication',false,false,null,'b83232'),{after:200});
+    }
+    else if(blk.t==='salut'){ body+=wp(wr(merge(blk.text,d,false)),{after:160}); }
+    else if(blk.t==='plain'){ body+=wp(wr(merge(blk.text,d,false)),{after:120}); }
+    else if(blk.t==='p'){ body+=wp(wr(merge(blk.text,d,false)),{after:160,justify:true}); }
+    else if(blk.t==='h'){ body+=wp(wr(blk.text,true,true),{before:200,after:80}); }
+    /* CHANGED: [Dim 6.3] Contingency sub-paragraphs (a)–(k): indent 360 -> 720 (one standard
+       Word indent level) so they render consistently aligned in Microsoft Word. */
+    else if(blk.t==='sub'){ body+=wp(wr(merge(blk.text,d,false)),{after:100,ind:720,justify:true}); }
+    else if(blk.t==='firmsig'){
+      body+=wEmpty();
+      body+=wp(wr(FIRM.name,true),{after:240});
+      body+=wp(wr('By: _____________________________________'),{after:0});
+      body+=wp(wr(`${blk.d.RESPONSIBLE_ATTORNEY||'[Responsible Attorney]'}${blk.d.ATTY_TITLE?', '+blk.d.ATTY_TITLE:''}`),{after:0});
+      if(blk.d.ATTY_EMAIL) body+=wp(wr(`Email: ${blk.d.ATTY_EMAIL}`),{after:0});
+      if(blk.d.ATTY_PHONE) body+=wp(wr(`Telephone: ${blk.d.ATTY_PHONE}`),{after:0});
+    }
+    else if(blk.t==='accept'){
+      body+=wp(wr('ACCEPTED AND AGREED:',true),{before:240,after:200});
+      if(state.clientType==='entity'){
+        body+=wp(wr(blk.d.CLIENT_NAME||'[Client Name]',true),{after:240});
+        body+=wp(wr('By: _____________________________________'),{after:0});
+        body+=wp(wr('Name: [Signatory Name]'),{after:0});
+        body+=wp(wr('Title: [Signatory Title]'),{after:0});
+        body+=wp(wr('Date: _________________________'),{after:0});
+      } else {
+        body+=wEmpty();body+=wEmpty();
+        body+=wp(wr('_____________________________________'),{after:0});
+        body+=wp(wr(blk.d.CLIENT_NAME||'[Client Name]'),{after:0});
+        body+=wp(wr('Date: _________________________'),{after:0});
+      }
+    }
+    else if(blk.t==='break'){ body+=wBreak(); }
+    else if(blk.t==='termsTitle'){ body+=wp(wr(blk.text,true,false,30,'1a2744'),{center:true,after:160}); }
+    else if(blk.t==='th'){ body+=wp(wr(blk.text,true),{before:160,after:60}); }
+  });
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>`+
+    `<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${body}`+
+    `<w:sectPr><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440" w:header="720" w:footer="720" w:gutter="0"/></w:sectPr></w:body></w:document>`;
+}
+/* CHANGED: [Dim 6.6] makeContentTypes / makeRootRels / makeDocRels / makeStyles were moved
+   up to the "DOCX STATIC XML" config section near the top (below RATE_SCHEDULE). */
+
+async function generateDocument(){
+  const btn=$('generateBtn'); btn.classList.add('loading'); btn.disabled=true;
+  btn.innerHTML='<i class="ti ti-loader"></i> Generating…';
+  try{
+    const d=collect();
+    const zip=new JSZip();
+    zip.file('[Content_Types].xml',makeContentTypes());
+    zip.file('_rels/.rels',makeRootRels());
+    const word=zip.folder('word');
+    word.file('document.xml',buildDocumentXml(d));
+    word.file('styles.xml',makeStyles());
+    word.folder('_rels').file('document.xml.rels',makeDocRels());
+    const blob=await zip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+    const slug=(d.CLIENT_NAME||'Client').replace(/[^a-z0-9]/gi,'_');
+    const ds=(getVal('engDate')||new Date().toISOString().slice(0,10)).replace(/-/g,'');
+    const fname=`EngagementLetter_${slug}_${ds}.docx`;
+    const url=URL.createObjectURL(blob); const a=document.createElement('a');
+    a.href=url;a.download=fname;document.body.appendChild(a);a.click();document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url),1500);
+    showToast('✓  '+fname);
+  }catch(err){ console.error(err); showToast('Error generating document — see console.'); }
+  finally{ btn.classList.remove('loading'); btn.disabled=!validate().ok; btn.innerHTML='<i class="ti ti-download"></i> Generate Word Document'; }
+}
+
+/* ============================================================
+   VALIDATION
+   ============================================================ */
+/* CHANGED: [Dim 4] validate() remains the single source of truth. It now returns a
+   structured `items` array (each with label, tab, ok) in addition to the original
+   `ok` and `miss` (labels of unsatisfied items) so the visual indicators — the inline
+   checklist and the per-tab status dots — can be derived purely from its output. */
+function validate(){
+  const name = state.clientType==='entity'?getVal('clientName'):getVal('clientNameInd');
+  const req=[
+    {label:'Client name',           tab:'matter', ok:!!name},
+    {label:'Matter description',     tab:'matter', ok:!!getVal('matterDesc')},
+    {label:'Engagement date',        tab:'matter', ok:!!getVal('engDate')},
+    {label:'Responsible attorney',   tab:'matter', ok:!!getVal('responsibleAtty')},
+    {label:'General description',     tab:'matter', ok:!!getVal('generalDesc')},
+  ];
+  if(state.feeType==='hourly')       req.push({label:'Hourly rate',                 tab:'fees', ok:!!getVal('hourlyRate')});
+  if(state.feeType==='flat')         req.push({label:'Flat fee amount',             tab:'fees', ok:!!getVal('flatFee')});
+  if(state.feeType==='gr_retainer')  req.push({label:'GR retainer amount',          tab:'fees', ok:!!getVal('grAmount')});
+  if(state.feeType==='contingency')  req.push({label:'Contingency percentages',     tab:'fees', ok:!!(getVal('presuitPct')&&getVal('postsuitPct'))});
+  if(state.feeType==='availability') req.push({label:'Availability retainer amount',tab:'fees', ok:!!getVal('availAmount')});
+  if(state.retainer==='evergreen'||state.retainer==='onetime') req.push({label:'Retainer amount', tab:'fees', ok:!!getVal('retainerAmount')});
+  if(state.retainer==='insured')     req.push({label:'Insurance carrier',           tab:'fees', ok:!!getVal('insuranceCarrier')});
+  const miss=req.filter(r=>!r.ok).map(r=>r.label);
+  return {ok:miss.length===0, miss, items:req};
+}
+
+/* ============================================================
+   UI WIRING
+   ============================================================ */
+/* CHANGED: [Dim 1 / Dim 6.4] renderSidebar no longer emits a list of dead `.active`
+   buttons with no wiring. With a single document type it renders one static,
+   non-interactive label; renderSidebarContext() below keeps the live practice-area
+   context in sync. */
+function renderSidebar(){
+  const dt=DOC_TYPES[0];
+  $('docTypeList').innerHTML=`<div class="doc-type-btn active" style="cursor:default"><div class="doc-type-icon"><i class="ti ${dt.icon}"></i></div><div><div class="doc-type-name">${dt.name}</div><div class="doc-type-sub">${dt.sub}</div></div></div>`;
+}
+
+/* CHANGED: [Dim 1] Live practice-area context in the sidebar. */
+function renderSidebarContext(){
+  const el=$('sidebarContext'); if(!el) return;
+  const prof=PRACTICE_PROFILES.find(p=>p.id===state.practiceArea);
+  if(!prof){ el.innerHTML=`<div class="sc-label">Practice Area</div><div class="sc-none">None selected — choose one on the Matter &amp; Client tab.</div>`; return; }
+  const feeLabel={hourly:'Hourly',flat:'Flat Fee',gr_retainer:'GR Retainer',contingency:'Contingency',availability:'Availability Retainer'}[state.feeType]||state.feeType;
+  const retLabel={none:'None',evergreen:'Evergreen',onetime:'One-Time',waived:'Waived',insured:'Insured'}[state.retainer]||state.retainer;
+  el.innerHTML=`<div class="sc-label">Practice Area</div><div class="sc-value">${esc(prof.label)}</div>`+
+    `<div class="sc-sub">Fee: ${esc(feeLabel)} &nbsp;·&nbsp; Retainer: ${esc(retLabel)}</div>`+
+    `<div class="sc-sub">${state.options.size} optional provision${state.options.size===1?'':'s'} selected</div>`;
+}
+
+/* CHANGED: [Dim 1] Render the practice-area selector cards. */
+function renderPracticeAreas(){
+  $('practiceAreaGrid').innerHTML=PRACTICE_PROFILES.map(p=>
+    `<button type="button" class="pa-btn" data-pa="${p.id}"><span class="pa-name">${esc(p.label)}</span><span class="pa-desc">${esc(p.desc)}</span></button>`
+  ).join('');
+  $('practiceAreaGrid').querySelectorAll('.pa-btn').forEach(b=>{
+    b.addEventListener('click',()=>selectPracticeArea(b.dataset.pa));
+  });
+}
+
+/* CHANGED: [Dim 1] Apply a profile's defaults. Changing mid-session asks once before resetting. */
+function selectPracticeArea(id){
+  if(state.practiceArea && state.practiceArea!==id){
+    if(!confirm('This will reset your defaults. Continue?')) return;
+  }
+  state.practiceArea=id;
+  applyProfile(PRACTICE_PROFILES.find(p=>p.id===id));
+}
+function applyProfile(prof){
+  if(!prof) return;
+  // fee type
+  state.feeType=prof.feeType;
+  setSeg('feeTypeSeg',prof.feeType);
+  // retainer
+  state.retainer=prof.retainer;
+  setSeg('retainerSeg',prof.retainer);
+  // standard optional provisions (replace selection with the profile's set)
+  state.options=new Set(prof.options);
+  OPTIONS.forEach(o=>{ const cb=$('opt_'+o.id); if(cb){ cb.checked=state.options.has(o.id); const c=$('cond_'+o.id); if(c)c.hidden=!cb.checked; } });
+  // anticipated services placeholder (only fill if empty, so we never overwrite the user's text)
+  const a=$('anticipatedServices'); if(a && !a.value.trim()) a.value=prof.anticipated;
+  // populate hourly rate ranges from the firm schedule when relevant
+  if(prof.feeType==='hourly') populateRateSchedule();
+  // reflect the active card
+  $('practiceAreaGrid').querySelectorAll('.pa-btn').forEach(b=>b.classList.toggle('active',b.dataset.pa===state.practiceArea));
+  refresh();
+}
+/* helper: activate a segmented-control value programmatically */
+function setSeg(segId,val){
+  const el=$(segId); if(!el) return;
+  el.querySelectorAll('button').forEach(b=>b.classList.toggle('active',b.dataset.val===val));
+}
+
+/* ============================================================
+   CHANGED: [Dim 2] ATTORNEY ROSTER + RATE SCHEDULE
+   ============================================================ */
+/* Populate the Responsible Attorney dropdown from ATTORNEYS. */
+function renderAttorneyRoster(){
+  const sel=$('responsibleAtty');
+  sel.innerHTML=`<option value="">— select attorney —</option>`+
+    ATTORNEYS.map((a,i)=>`<option value="${esc(a.name)}" data-idx="${i}">${esc(a.name)} — ${esc(a.title)} (${esc(a.practiceGroup)})</option>`).join('');
+  sel.addEventListener('change',()=>{ fillResponsibleAttorney(); refresh(); });
+}
+/* On selection, auto-fill title/email/phone and the responsible-attorney rate (all editable). */
+function fillResponsibleAttorney(){
+  const a=ATTORNEYS.find(x=>x.name===$('responsibleAtty').value);
+  if(!a) return;
+  $('attyTitle').value=a.title;
+  $('attyEmail').value=a.email;
+  $('attyPhone').value=a.phone;
+  // only fill the rate if hourly is the active fee structure
+  if(state.feeType==='hourly') $('hourlyRate').value=a.rate;
+}
+/* Auto-populate the hourly rate ranges from RATE_SCHEDULE (fields stay editable). */
+function populateRateSchedule(){
+  const map={memberRateLow:'memberLow',memberRateHigh:'memberHigh',assocRateLow:'assocLow',assocRateHigh:'assocHigh',paraRateLow:'paraLow',paraRateHigh:'paraHigh'};
+  Object.entries(map).forEach(([id,key])=>{ const el=$(id); if(el && !el.value.trim()) el.value=RATE_SCHEDULE[key]; });
+}
+
+/* CHANGED: [Dim 2] Principal Attorneys tokenized multi-select drawn from ATTORNEYS. */
+function joinNames(names){
+  if(names.length===0) return '';
+  if(names.length===1) return names[0];
+  if(names.length===2) return names[0]+' and '+names[1];
+  return names.slice(0,-1).join(', ')+' and '+names[names.length-1];
+}
+function renderPrincipalSelect(){
+  const list=$('principalList');
+  list.innerHTML=ATTORNEYS.map(a=>{
+    const on=state.principalAttys.includes(a.name);
+    return `<label class="ms-item"><input type="checkbox" data-name="${esc(a.name)}" ${on?'checked':''}><span>${esc(a.name)}</span><span class="ms-grp">${esc(a.title)} · ${esc(a.practiceGroup)}</span></label>`;
+  }).join('');
+  list.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.addEventListener('change',()=>{
+    const n=cb.dataset.name;
+    if(cb.checked){ if(!state.principalAttys.includes(n)) state.principalAttys.push(n); }
+    else state.principalAttys=state.principalAttys.filter(x=>x!==n);
+    syncPrincipalTokens(); refresh();
+  }));
+  syncPrincipalTokens();
+}
+function syncPrincipalTokens(){
+  const wrap=$('principalTokens');
+  if(state.principalAttys.length===0){
+    wrap.innerHTML=`<span class="token-placeholder">No principal attorneys selected</span>`;
+  } else {
+    wrap.innerHTML=state.principalAttys.map(n=>`<span class="token">${esc(n)}<button type="button" data-name="${esc(n)}" aria-label="Remove">×</button></span>`).join('');
+    wrap.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+      state.principalAttys=state.principalAttys.filter(x=>x!==b.dataset.name);
+      const cb=$('principalList').querySelector(`input[data-name="${CSS.escape(b.dataset.name)}"]`); if(cb) cb.checked=false;
+      syncPrincipalTokens(); refresh();
+    }));
+  }
+  // keep the hidden input (read by collect()) in sync as a grammatically-joined string
+  $('principalAttorneys').value=joinNames(state.principalAttys);
+}
+
+function renderToggles(){
+  $('toggleList').innerHTML=OPTIONS.map(o=>{
+    let sub='';
+    if(o.fields){
+      sub=`<div class="toggle-sub-fields cond" id="cond_${o.id}" hidden>`+o.fields.map(f=>{
+        const cls=f.full?'field full':'field';
+        const input=f.area?`<textarea id="${f.id}" rows="2"></textarea>`:`<input type="text" id="${f.id}"/>`;
+        return `<div class="${cls}"><label for="${f.id}">${f.label}</label>${input}</div>`;
+      }).join('')+`</div>`;
+    }
+    return `<div class="toggle-row"><label class="toggle"><input type="checkbox" id="opt_${o.id}"><span class="toggle-track"></span></label><div class="toggle-body"><div class="toggle-name">${o.name}<span class="badge" style="${o.badgeCss}">${o.badge}</span></div><div class="toggle-desc">${o.desc}</div>${sub}</div></div>`;
+  }).join('');
+  OPTIONS.forEach(o=>{
+    $('opt_'+o.id).addEventListener('change',e=>{
+      e.target.checked?state.options.add(o.id):state.options.delete(o.id);
+      const c=$('cond_'+o.id); if(c)c.hidden=!e.target.checked;
+      refresh();
+    });
+  });
+}
+
+function seg(segId,key,onChange){
+  const el=$(segId);
+  el.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+    el.querySelectorAll('button').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active'); state[key]=b.dataset.val; onChange&&onChange(b.dataset.val); refresh();
+  }));
+}
+
+function syncConditionals(){
+  $('condEntity').hidden = state.clientType!=='entity';
+  $('condIndividual').hidden = state.clientType!=='individual';
+  $('condAffiliates').hidden = !$('hasAffiliates').checked;
+  $('condStaffing').hidden = !$('hasStaffing').checked;
+  $('condLimitedScope').hidden = !$('hasLimitedScope').checked;
+  $('condDiscount').hidden = !$('hasDiscount').checked;
+  // fee panels
+  $('feeHourly').hidden = state.feeType!=='hourly';
+  $('feeFlat').hidden = state.feeType!=='flat';
+  $('feeGr').hidden = state.feeType!=='gr_retainer';
+  $('feeContingency').hidden = state.feeType!=='contingency';
+  $('feeAvailability').hidden = state.feeType!=='availability';
+  // retainer
+  $('condRetainerAmount').hidden = !(state.retainer==='evergreen'||state.retainer==='onetime');
+  $('condInsured').hidden = state.retainer!=='insured';
+}
+
+function updateBadge(){ const b=$('sectionBadge'); b.textContent=state.options.size; b.style.display=state.options.size?'inline':'none'; }
+
+/* CHANGED: [Dim 4] Generate bar now shows an inline ✓/✗ completion checklist (scrollable),
+   derived purely from validate().items. */
+function updateBar(){
+  const v=validate(); $('generateBtn').disabled=!v.ok;
+  $('completionList').innerHTML=v.items.map(it=>
+    `<span class="ck-item ${it.ok?'ok':'miss'}"><span class="ck-mark">${it.ok?'✓':'✗'}</span>${esc(it.label)}</span>`
+  ).join('');
+}
+
+/* CHANGED: [Dim 4] Per-tab status dots derived from validate().items.
+     gray  = untouched (not visited, no required field satisfied)
+     yellow= visited/touched but required fields still missing
+     green = all required fields for that tab satisfied
+   Options tab has no required fields -> green once visited, else gray. */
+function updateTabDots(){
+  const v=validate();
+  ['matter','fees'].forEach(tab=>{
+    const dot=document.querySelector(`.tab-dot[data-dot="${tab}"]`); if(!dot) return;
+    const items=v.items.filter(i=>i.tab===tab);
+    const satisfied=items.filter(i=>i.ok).length;
+    let cls='';
+    if(items.length && satisfied===items.length) cls='green';
+    else if(state.visitedTabs.has(tab) || satisfied>0) cls='yellow';
+    dot.className='tab-dot'+(cls?' '+cls:'');
+  });
+  const od=document.querySelector('.tab-dot[data-dot="options"]');
+  if(od) od.className='tab-dot'+(state.visitedTabs.has('options')?' green':'');
+}
+
+/* ============================================================
+   CHANGED: [Dim 3] INTELLIGENT PROVISION SUGGESTIONS
+   Rule-based, no network. Non-blocking, individually dismissible,
+   no repeat after dismissal (per session).
+   ============================================================ */
+let payingEntityTimer=null;
+function computeSuggestions(){
+  const s=[]; const o=state.options;
+  if(state.feeType==='contingency' && state.retainer!=='waived' && state.retainer!=='insured')
+    s.push({id:'contingencyRetainer', text:'Contingency matters typically use a waived or insured retainer. Consider updating Section 4.'});
+  if(o.has('jointConflict') && !o.has('specificConflict'))
+    s.push({id:'jointSpecific', text:'Joint representation selected — consider whether a specific conflict waiver (RPC 1.7) is also needed.'});
+  if(o.has('ediscovery') && !o.has('litigationHold'))
+    s.push({id:'ediscoveryHold', text:'eDiscovery costs provision selected without a litigation hold. These are typically paired.'});
+  if(state.practiceArea==='Litigation' && !o.has('litigationHold'))
+    s.push({id:'litHold', text:'Litigation matters typically include a document preservation / litigation hold provision.'});
+  if(state.feeType==='hourly' && $('hasDiscount').checked){
+    const dr=parseFloat(getVal('discountRate')), hr=parseFloat(getVal('hourlyRate'));
+    if(!isNaN(dr) && !isNaN(hr) && dr>=hr)
+      s.push({id:'discountHigh', text:'Discounted rate is equal to or higher than the standard rate. Please verify.'});
+  }
+  if(o.has('thirdParty') && !getVal('payingEntity'))
+    s.push({id:'payingEntity', text:'Third-party payment selected — don’t forget to enter the paying entity name.', deferred:true});
+  return s;
+}
+function renderSuggestions(){
+  const all=computeSuggestions();
+  // the paying-entity suggestion only surfaces after 3s of inactivity (handled by timer); filter here unless armed
+  const stack=$('suggestStack');
+  const show=all.filter(x=>!state.dismissedSuggestions.has(x.id) && (!x.deferred || state._payingEntityArmed));
+  stack.innerHTML=show.map(x=>
+    `<div class="suggest" data-id="${x.id}"><i class="ti ti-bulb lead"></i><div class="s-text">${esc(x.text)}</div><button class="s-dismiss" aria-label="Dismiss">×</button></div>`
+  ).join('');
+  stack.querySelectorAll('.suggest').forEach(el=>{
+    el.querySelector('.s-dismiss').addEventListener('click',()=>{ state.dismissedSuggestions.add(el.dataset.id); renderSuggestions(); });
+  });
+  // arm/disarm the deferred paying-entity check
+  const wantsDeferred=all.some(x=>x.deferred);
+  if(wantsDeferred && !state._payingEntityArmed){
+    clearTimeout(payingEntityTimer);
+    payingEntityTimer=setTimeout(()=>{ state._payingEntityArmed=true; renderSuggestions(); },3000);
+  } else if(!wantsDeferred){
+    clearTimeout(payingEntityTimer); state._payingEntityArmed=false;
+  }
+}
+
+function showToast(msg){ $('toastMessage').textContent=msg; const el=$('toast'); el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),3400); }
+
+function refresh(){ syncConditionals(); updateBadge(); updateBar(); updateTabDots(); renderSuggestions(); renderSidebarContext(); if($('panel-preview').classList.contains('active')) renderPreview(); }
+
+function switchTab(id){
+  state.visitedTabs.add(id); // CHANGED: [Dim 4] track visited tabs for dot status
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('active',p.id===`panel-${id}`));
+  updateTabDots();
+  if(id==='preview') renderPreview();
+}
+
+/* ============================================================
+   CHANGED: [Dim 5] MATTER TEMPLATES (localStorage)
+   ============================================================ */
+function loadTemplates(){ try{ return JSON.parse(localStorage.getItem(TEMPLATES_KEY))||[]; }catch(e){ return []; } }
+function persistTemplates(t){ localStorage.setItem(TEMPLATES_KEY,JSON.stringify(t)); }
+function captureTemplate(){
+  const data={fields:{},toggles:{}};
+  data.practiceArea=state.practiceArea;
+  data.clientType=state.clientType;
+  data.feeType=state.feeType;
+  data.retainer=state.retainer;
+  data.options=[...state.options];
+  data.principalAttys=[...state.principalAttys];
+  TEMPLATE_FIELDS.forEach(id=>{ const el=$(id); if(el) data.fields[id]=el.value; });
+  TEMPLATE_TOGGLES.forEach(id=>{ const el=$(id); if(el) data.toggles[id]=el.checked; });
+  return data;
+}
+function applyTemplate(data){
+  if(!data) return;
+  // practice area (apply silently — sets feeType/retainer/options/anticipated)
+  if(data.practiceArea){ state.practiceArea=data.practiceArea; $('practiceAreaGrid').querySelectorAll('.pa-btn').forEach(b=>b.classList.toggle('active',b.dataset.pa===data.practiceArea)); }
+  // client type
+  if(data.clientType){ state.clientType=data.clientType; setSeg('clientTypeSeg',data.clientType); }
+  // fee + retainer
+  if(data.feeType){ state.feeType=data.feeType; setSeg('feeTypeSeg',data.feeType); }
+  if(data.retainer){ state.retainer=data.retainer; setSeg('retainerSeg',data.retainer); }
+  // options
+  state.options=new Set(data.options||[]);
+  OPTIONS.forEach(o=>{ const cb=$('opt_'+o.id); if(cb){ cb.checked=state.options.has(o.id); const c=$('cond_'+o.id); if(c)c.hidden=!cb.checked; } });
+  // scalar fields + toggles
+  Object.entries(data.fields||{}).forEach(([id,val])=>{ const el=$(id); if(el) el.value=val; });
+  Object.entries(data.toggles||{}).forEach(([id,val])=>{ const el=$(id); if(el) el.checked=val; });
+  // principal attorneys
+  state.principalAttys=[...(data.principalAttys||[])];
+  renderPrincipalSelect();
+  refresh();
+  showToast('✓  Template loaded');
+}
+function saveTemplate(){
+  const templates=loadTemplates();
+  if(templates.length>=TEMPLATES_MAX){ showToast('Template limit reached ('+TEMPLATES_MAX+'). Delete one first.'); return; }
+  if(!localStorage.getItem(TEMPLATES_KEY)) alert('Note: templates are saved in this browser only. They will not follow you to another computer.');
+  const name=(prompt('Template name:')||'').trim();
+  if(!name) return;
+  const idx=templates.findIndex(t=>t.name===name);
+  const entry={name,data:captureTemplate()};
+  if(idx>=0) templates[idx]=entry; else templates.push(entry);
+  persistTemplates(templates);
+  renderTemplateMenu();
+  showToast('✓  Saved template “'+name+'”');
+}
+function deleteTemplate(name){
+  if(!confirm('Delete template “'+name+'”?')) return;
+  persistTemplates(loadTemplates().filter(t=>t.name!==name));
+  renderTemplateMenu();
+}
+function renderTemplateMenu(){
+  const templates=loadTemplates();
+  $('tplLoadWrap').hidden=templates.length===0;
+  const menu=$('tplMenu');
+  if(templates.length===0){ menu.innerHTML=`<div class="tpl-empty">No saved templates</div>`; return; }
+  menu.innerHTML=templates.map(t=>
+    `<div class="tpl-row"><span class="tpl-name" data-name="${esc(t.name)}">${esc(t.name)}</span><button class="tpl-del" data-name="${esc(t.name)}" aria-label="Delete">×</button></div>`
+  ).join('')+`<div class="tpl-notice">Templates are saved in this browser only.</div>`;
+  menu.querySelectorAll('.tpl-name').forEach(el=>el.addEventListener('click',()=>{
+    const t=loadTemplates().find(x=>x.name===el.dataset.name); applyTemplate(t&&t.data); menu.hidden=true;
+  }));
+  menu.querySelectorAll('.tpl-del').forEach(el=>el.addEventListener('click',()=>deleteTemplate(el.dataset.name)));
+}
+
+function init(){
+  renderSidebar(); renderToggles();
+  // CHANGED: [Dim 1/2/5] new render passes for practice areas, roster, principal select, templates
+  renderPracticeAreas();
+  renderAttorneyRoster();
+  renderPrincipalSelect();
+  $('principalAddBtn').addEventListener('click',()=>{ const l=$('principalList'); l.hidden=!l.hidden; });
+  renderTemplateMenu();
+  $('engDate').value=new Date().toISOString().slice(0,10);
+  // CHANGED: [Dim 2] when the user switches to the hourly fee panel, seed the rate ranges
+  seg('clientTypeSeg','clientType');
+  seg('feeTypeSeg','feeType',v=>{ if(v==='hourly') populateRateSchedule(); });
+  seg('retainerSeg','retainer');
+  ['hasAffiliates','hasStaffing','hasLimitedScope','hasDiscount'].forEach(id=>$(id).addEventListener('change',refresh));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
+  $('generateBtn').addEventListener('click',generateDocument);
+  // CHANGED: [Dim 5] template controls
+  $('saveTplBtn').addEventListener('click',saveTemplate);
+  $('tplLoadBtn').addEventListener('click',()=>{ const m=$('tplMenu'); m.hidden=!m.hidden; });
+  document.addEventListener('click',e=>{ if(!e.target.closest('#tplLoadWrap')) $('tplMenu').hidden=true; });
+  // seed hourly rate ranges on first load (hourly is the firm-wide default)
+  if(state.feeType==='hourly') populateRateSchedule();
+  document.addEventListener('input',e=>{ if(e.target.matches('input,select,textarea')) refresh(); });
+  refresh();
+}
+document.addEventListener('DOMContentLoaded',init);
+
+/* ============================================================================
+   CHANGELOG — Firmwide-readiness rebuild
+   ============================================================================
+   Constraints honored: no CLAUSES values, OPTIONS name/desc/badge, or FIRM
+   name/contact altered; no new dependencies (JSZip + Tabler Icons only); no
+   framework; no network calls at runtime; localStorage only; only existing CSS
+   design tokens used for new UI; generated .docx remains macro/plugin-free.
+
+   ── Dimension 1: Practice-area profiles ──────────────────────────────────
+   • Added PRACTICE_PROFILES config (Corporate/M&A, CRE, Litigation, Employment,
+     Tax, General/Other), each pre-setting feeType, retainer, standard OPTIONS,
+     and an anticipated-services placeholder.
+   • Added a Practice Area selector card as the first card on the Matter & Client
+     tab (option b). Selecting a profile applies defaults without locking fields.
+   • Changing the practice area mid-session prompts a single confirm() before
+     re-applying. anticipatedServices is only filled when empty (never overwrites).
+   • ASSUMPTIONS: hourly is the firm-wide default fee type; Litigation defaults to
+     hourly (most common arrangement) and the attorney switches to contingency for
+     PI matters; retainer defaults — Corporate→evergreen, CRE/Employment→one-time,
+     Litigation→insured, Tax/General→none; Litigation pre-checks litigation-hold,
+     eDiscovery, and social-media provisions; Corporate pre-checks joint conflict.
+   • Sidebar: removed dead DOC_TYPES `.active` buttons (no wiring). Now a single
+     static document-type label plus a live practice-area context panel.
+
+   ── Dimension 2: Attorney roster + rate schedule ─────────────────────────
+   • Added ATTORNEYS roster (10 representative entries; Members/Associates/Of
+     Counsel across all groups) with an explicit administrator note.
+   • Responsible Attorney is now a dropdown built from ATTORNEYS; selecting an
+     attorney auto-fills title, email, phone, and (when hourly) the rate — all
+     editable.
+   • Added RATE_SCHEDULE (by timekeeper class) with an "update annually each
+     January" note. The hourly panel's rate ranges auto-populate from it (editable).
+   • Principal Attorneys is now a tokenized multi-select drawn from the roster;
+     a hidden input mirrors the selection as a grammatically-joined string so the
+     existing {{PRINCIPAL_ATTORNEYS}} merge is unchanged.
+
+   ── Dimension 3: Intelligent provision suggestions ───────────────────────
+   • Added a non-blocking suggestion banner stack below the tab bar. All six
+     specified rules implemented (contingency↔retainer, joint↔specific conflict,
+     eDiscovery↔litigation hold, Litigation↔litigation hold, discount≥standard
+     rate, third-party↔paying entity). Suggestions stack, are individually
+     dismissible, and do not reappear after dismissal (per session).
+   • The third-party/paying-entity rule fires only after ~3s of inactivity (timer
+     reset on each input), matching the spec.
+
+   ── Dimension 4: Cross-tab completion status ─────────────────────────────
+   • validate() refactored to return a structured items[] array (label, tab, ok)
+     and remains the single source of truth; .ok/.miss preserved.
+   • Generate bar shows an inline ✓/✗ checklist (scrollable) instead of plain text.
+   • Each tab button carries a status dot: gray (untouched), yellow (visited/partial),
+     green (all required satisfied). Options tab → green once visited.
+
+   ── Dimension 5: Matter templates (localStorage) ─────────────────────────
+   • Added TEMPLATES_KEY + TEMPLATES_MAX (10). "Save as Template" (secondary
+     button, prompt() for name) captures practice area, client type, fee type,
+     retainer, OPTIONS, principal attorneys, and non-client-specific fields/toggles
+     (TEMPLATE_FIELDS / TEMPLATE_TOGGLES) — never client-identifying fields.
+   • "Load Template" dropdown appears (collapsed) only when templates exist, with
+     per-template delete and a "saved in this browser only" notice (also shown on
+     first save). Graceful message when the 10-template cap is reached.
+
+   ── Dimension 6: DOCX + code quality ─────────────────────────────────────
+   • 6.1 Verified xe() coverage: all user text in firmsig/accept/meta blocks is
+     emitted via wr(), which applies xe() to the full interpolated string — no
+     bypass exists, so output is correctly XML-escaped. (No code change needed.)
+   • 6.2 Verified the body→Terms page break is produced by wBreak()
+     (`<w:br w:type="page"/>`), not the preview's visual dashed rule. Confirmed.
+   • 6.3 Contingency sub-paragraphs (a)–(k): indent 360 → 720 (one standard Word
+     indent level) for consistent alignment in Microsoft Word.
+   • 6.4 renderSidebar() no longer emits dead `.active` buttons; repurposed (Dim 1).
+   • 6.5 Added JSDoc/administrator notes above CLAUSES, OPTIONS, ATTORNEYS, RATE_SCHEDULE.
+   • 6.6 Moved makeContentTypes/makeRootRels/makeDocRels/makeStyles into a labeled
+     "DOCX STATIC XML" config section near the top (below RATE_SCHEDULE).
+   ============================================================================ */
+</script>
+</body>
+</html>
