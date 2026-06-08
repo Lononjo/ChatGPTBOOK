@@ -317,11 +317,12 @@
             <div class="card-header"><span class="card-header-title">Client Contact &amp; Delivery</span></div>
             <div class="card-body">
               <div class="grid-2">
-                <div class="field"><label for="contactName">Contact Name</label><input type="text" id="contactName" placeholder="e.g. Stephen Navarro"/></div>
-                <div class="field"><label for="contactTitle">Contact Title</label><input type="text" id="contactTitle" placeholder="e.g. President &amp; CEO"/></div>
-                <div class="field"><label for="salutation">Salutation</label><input type="text" id="salutation" placeholder="e.g. Steve"/></div>
-                <div class="field"><label for="contactEmail">Contact Email</label><input type="email" id="contactEmail" placeholder="contact@example.com"/></div>
-                <div class="field full"><label for="clientAddr">Mailing Address</label><textarea id="clientAddr" rows="2" placeholder="355 S. Main St., Suite 903&#10;Greenville, SC 29601"></textarea></div>
+                <!-- FIXED: [5 placeholder identity] neutral, non-identifying example values -->
+                <div class="field"><label for="contactName">Contact Name</label><input type="text" id="contactName" placeholder="e.g. Alex Johnson"/></div>
+                <div class="field"><label for="contactTitle">Contact Title</label><input type="text" id="contactTitle" placeholder="e.g. Chief Executive Officer"/></div>
+                <div class="field"><label for="salutation">Salutation</label><input type="text" id="salutation" placeholder="e.g. Alex"/></div>
+                <div class="field"><label for="contactEmail">Contact Email</label><input type="email" id="contactEmail" placeholder="e.g. contact@clientdomain.com"/></div>
+                <div class="field full"><label for="clientAddr">Mailing Address</label><textarea id="clientAddr" rows="2" placeholder="123 Main Street&#10;City, SC 29000"></textarea></div>
                 <div class="field full">
                   <label for="deliveryMethod">Delivery Method</label>
                   <select id="deliveryMethod">
@@ -340,17 +341,20 @@
             <div class="card-header"><span class="card-header-title">Matter &amp; Scope</span></div>
             <div class="card-body">
               <div class="grid-2">
-                <div class="field full"><label for="matterDesc">Matter Description <span class="req">*</span></label><input type="text" id="matterDesc" placeholder="e.g. a commercial real estate acquisition in Greenville County"/></div>
+                <!-- FIXED: [5 placeholder identity] practice-neutral matter example -->
+                <div class="field full"><label for="matterDesc">Matter Description <span class="req">*</span></label><input type="text" id="matterDesc" placeholder="e.g. a commercial transaction in South Carolina"/></div>
                 <div class="field"><label for="engDate">Engagement Date <span class="req">*</span></label><input type="date" id="engDate"/></div>
                 <!-- CHANGED: [Dim 2] Free-text Responsible Attorney replaced with a structured
                      dropdown populated from the ATTORNEYS roster. Selecting an attorney auto-fills
                      title, email, phone, and the responsible-attorney hourly rate (all editable). -->
                 <div class="field"><label for="responsibleAtty">Responsible Attorney <span class="req">*</span></label><select id="responsibleAtty"></select></div>
                 <div class="field"><label for="attyTitle">Attorney Title</label><input type="text" id="attyTitle" placeholder="e.g. Member"/></div>
-                <div class="field"><label for="attyEmail">Attorney Email</label><input type="email" id="attyEmail" placeholder="jlonon@wyche.com"/></div>
-                <div class="field"><label for="attyPhone">Attorney Phone</label><input type="text" id="attyPhone" placeholder="(864) 242-8200"/></div>
-                <div class="field full"><label for="generalDesc">General Description of Services <span class="req">*</span></label><input type="text" id="generalDesc" placeholder="e.g. representation in connection with the acquisition and financing of the Property"/></div>
-                <div class="field full"><label for="anticipatedServices">Anticipated Services</label><textarea id="anticipatedServices" rows="2" placeholder="e.g. contract review, due diligence, title and survey review, closing"></textarea></div>
+                <!-- FIXED: [5 placeholder identity] generic attorney email/phone (no real identity) -->
+                <div class="field"><label for="attyEmail">Attorney Email</label><input type="email" id="attyEmail" placeholder="e.g. attorney@wyche.com"/></div>
+                <div class="field"><label for="attyPhone">Attorney Phone</label><input type="text" id="attyPhone" placeholder="e.g. (864) 000-0000"/></div>
+                <!-- FIXED: [5 placeholder identity] practice-neutral scope examples (PRACTICE_PROFILES.anticipated values unchanged) -->
+                <div class="field full"><label for="generalDesc">General Description of Services <span class="req">*</span></label><input type="text" id="generalDesc" placeholder="e.g. representation in connection with the Matter described above"/></div>
+                <div class="field full"><label for="anticipatedServices">Anticipated Services</label><textarea id="anticipatedServices" rows="2" placeholder="e.g. reviewing and negotiating transaction documents, conducting due diligence, and advising on applicable legal requirements"></textarea></div>
               </div>
 
               <div class="cond">
@@ -378,7 +382,8 @@
                   Add a defined scope limitation (limit to specific areas of law)
                 </label>
                 <div class="cond" id="condLimitedScope" hidden>
-                  <div class="field full" style="margin-bottom:11px"><label for="limitedScope">Scope is limited to</label><input type="text" id="limitedScope" placeholder='e.g. matters governed by South Carolina law applicable to commercial real estate transactions'/></div>
+                  <!-- FIXED: [5 placeholder identity] practice-neutral scope example -->
+                  <div class="field full" style="margin-bottom:11px"><label for="limitedScope">Scope is limited to</label><input type="text" id="limitedScope" placeholder='e.g. matters governed by South Carolina law applicable to this engagement'/></div>
                   <div class="field full"><label for="excludedAreas">Exclusive of</label><textarea id="excludedAreas" rows="2" placeholder="e.g. regulatory matters, taxation, securities, banking, antitrust, intellectual property, labor and employment"></textarea></div>
                 </div>
               </div>
@@ -418,7 +423,8 @@
                   <div class="cond" id="condDiscount" hidden>
                     <div class="grid-2">
                       <div class="field"><label for="discountRate">Discounted Rate (resp. atty)</label><div class="prefix-wrap"><span class="prefix-sym">$</span><input type="number" id="discountRate" placeholder="700"/></div></div>
-                      <div class="field"><label for="otherAttyName">Other Attorney Name</label><input type="text" id="otherAttyName" placeholder="e.g. Brittany Arsiniega"/></div>
+                      <!-- FIXED: [5 placeholder identity] generic co-counsel example (no real name) -->
+                      <div class="field"><label for="otherAttyName">Other Attorney Name</label><input type="text" id="otherAttyName" placeholder="e.g. Co-Counsel Name"/></div>
                       <div class="field"><label for="otherDiscountRate">Other Atty Discounted Rate</label><div class="prefix-wrap"><span class="prefix-sym">$</span><input type="number" id="otherDiscountRate" placeholder="615"/></div></div>
                     </div>
                   </div>
@@ -838,6 +844,7 @@ const CLAUSES = {
    ============================================================ */
 const state = {
   practiceArea:null,            // CHANGED: [Dim 1] selected practice-area id (from PRACTICE_PROFILES)
+  profileDirty:false,           // IMPROVED: [1 profile re-selection guard] true once fields edited since last profile apply
   clientType:'entity',
   feeType:'hourly',
   retainer:'none',
@@ -1234,7 +1241,8 @@ function renderPracticeAreas(){
 
 /* CHANGED: [Dim 1] Apply a profile's defaults. Changing mid-session asks once before resetting. */
 function selectPracticeArea(id){
-  if(state.practiceArea && state.practiceArea!==id){
+  // IMPROVED: [1 profile re-selection guard] also warn when re-selecting the SAME card after edits.
+  if(state.practiceArea && (state.practiceArea!==id || state.profileDirty)){
     if(!confirm('This will reset your defaults. Continue?')) return;
   }
   state.practiceArea=id;
@@ -1258,6 +1266,7 @@ function applyProfile(prof){
   // reflect the active card
   $('practiceAreaGrid').querySelectorAll('.pa-btn').forEach(b=>b.classList.toggle('active',b.dataset.pa===state.practiceArea));
   refresh();
+  state.profileDirty=false; // IMPROVED: [1 profile re-selection guard] reset dirty flag after applying defaults
 }
 /* helper: activate a segmented-control value programmatically */
 function setSeg(segId,val){
@@ -1272,7 +1281,9 @@ function setSeg(segId,val){
 function renderAttorneyRoster(){
   const sel=$('responsibleAtty');
   sel.innerHTML=`<option value="">— select attorney —</option>`+
-    ATTORNEYS.map((a,i)=>`<option value="${esc(a.name)}" data-idx="${i}">${esc(a.name)} — ${esc(a.title)} (${esc(a.practiceGroup)})</option>`).join('');
+    // FIXED: [1 option value escaping] value is the RAW name (esc() is an HTML-entity escaper,
+    // wrong for attribute values); esc() is used only for the visible display text.
+    ATTORNEYS.map((a,i)=>`<option value="${a.name}" data-idx="${i}">${esc(a.name)} — ${esc(a.title)} (${esc(a.practiceGroup)})</option>`).join('');
   sel.addEventListener('change',()=>{ fillResponsibleAttorney(); refresh(); });
 }
 /* On selection, auto-fill title/email/phone and the responsible-attorney rate (all editable). */
@@ -1428,7 +1439,8 @@ function computeSuggestions(){
       s.push({id:'discountHigh', text:'Discounted rate is equal to or higher than the standard rate. Please verify.'});
   }
   if(o.has('thirdParty') && !getVal('payingEntity'))
-    s.push({id:'payingEntity', text:'Third-party payment selected — don’t forget to enter the paying entity name.', deferred:true});
+    // FIXED: [2 string literal escaping] em dash -> — and apostrophe -> ’ for safety/consistency.
+    s.push({id:'payingEntity', text:'Third-party payment selected \u2014 don\u2019t forget to enter the paying entity name.', deferred:true});
   return s;
 }
 function renderSuggestions(){
@@ -1499,6 +1511,7 @@ function applyTemplate(data){
   // principal attorneys
   state.principalAttys=[...(data.principalAttys||[])];
   renderPrincipalSelect();
+  $('principalList').hidden=true; // FIXED: [4 principal list left open] reset picker visibility after load
   refresh();
   showToast('✓  Template loaded');
 }
@@ -1515,9 +1528,12 @@ function saveTemplate(){
   renderTemplateMenu();
   showToast('✓  Saved template “'+name+'”');
 }
-function deleteTemplate(name){
-  if(!confirm('Delete template “'+name+'”?')) return;
-  persistTemplates(loadTemplates().filter(t=>t.name!==name));
+// FIXED: [3 template name round-trip] deleteTemplate now keys off the array index, not the name string.
+function deleteTemplate(idx){
+  const templates=loadTemplates();
+  const t=templates[idx]; if(!t) return;
+  if(!confirm('Delete template “'+t.name+'”?')) return;
+  persistTemplates(templates.filter((_,i)=>i!==idx));
   renderTemplateMenu();
 }
 function renderTemplateMenu(){
@@ -1525,13 +1541,14 @@ function renderTemplateMenu(){
   $('tplLoadWrap').hidden=templates.length===0;
   const menu=$('tplMenu');
   if(templates.length===0){ menu.innerHTML=`<div class="tpl-empty">No saved templates</div>`; return; }
-  menu.innerHTML=templates.map(t=>
-    `<div class="tpl-row"><span class="tpl-name" data-name="${esc(t.name)}">${esc(t.name)}</span><button class="tpl-del" data-name="${esc(t.name)}" aria-label="Delete">×</button></div>`
+  // FIXED: [3 template name round-trip] rows key off data-idx (array position), not the name string.
+  menu.innerHTML=templates.map((t,i)=>
+    `<div class="tpl-row"><span class="tpl-name" data-idx="${i}">${esc(t.name)}</span><button class="tpl-del" data-idx="${i}" aria-label="Delete">×</button></div>`
   ).join('')+`<div class="tpl-notice">Templates are saved in this browser only.</div>`;
   menu.querySelectorAll('.tpl-name').forEach(el=>el.addEventListener('click',()=>{
-    const t=loadTemplates().find(x=>x.name===el.dataset.name); applyTemplate(t&&t.data); menu.hidden=true;
+    const t=loadTemplates()[parseInt(el.dataset.idx)]; applyTemplate(t&&t.data); menu.hidden=true;
   }));
-  menu.querySelectorAll('.tpl-del').forEach(el=>el.addEventListener('click',()=>deleteTemplate(el.dataset.name)));
+  menu.querySelectorAll('.tpl-del').forEach(el=>el.addEventListener('click',()=>deleteTemplate(parseInt(el.dataset.idx))));
 }
 
 function init(){
@@ -1545,7 +1562,15 @@ function init(){
   $('engDate').value=new Date().toISOString().slice(0,10);
   // CHANGED: [Dim 2] when the user switches to the hourly fee panel, seed the rate ranges
   seg('clientTypeSeg','clientType');
-  seg('feeTypeSeg','feeType',v=>{ if(v==='hourly') populateRateSchedule(); });
+  // IMPROVED: [2 hourly rate back-fill] also fill the responsible attorney's rate when switching to hourly.
+  seg('feeTypeSeg','feeType',v=>{
+    if(v==='hourly'){
+      populateRateSchedule();
+      const a=ATTORNEYS.find(x=>x.name===$('responsibleAtty').value);
+      if(a) $('hourlyRate').value=a.rate;
+    }
+    refresh();
+  });
   seg('retainerSeg','retainer');
   ['hasAffiliates','hasStaffing','hasLimitedScope','hasDiscount'].forEach(id=>$(id).addEventListener('change',refresh));
   document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
@@ -1556,7 +1581,8 @@ function init(){
   document.addEventListener('click',e=>{ if(!e.target.closest('#tplLoadWrap')) $('tplMenu').hidden=true; });
   // seed hourly rate ranges on first load (hourly is the firm-wide default)
   if(state.feeType==='hourly') populateRateSchedule();
-  document.addEventListener('input',e=>{ if(e.target.matches('input,select,textarea')) refresh(); });
+  // IMPROVED: [1 profile re-selection guard] any manual edit marks the profile dirty.
+  document.addEventListener('input',e=>{ if(e.target.matches('input,select,textarea')){ state.profileDirty=true; refresh(); } });
   refresh();
 }
 document.addEventListener('DOMContentLoaded',init);
@@ -1634,6 +1660,47 @@ document.addEventListener('DOMContentLoaded',init);
    • 6.5 Added JSDoc/administrator notes above CLAUSES, OPTIONS, ATTORNEYS, RATE_SCHEDULE.
    • 6.6 Moved makeContentTypes/makeRootRels/makeDocRels/makeStyles into a labeled
      "DOCX STATIC XML" config section near the top (below RATE_SCHEDULE).
+   ============================================================================ */
+
+/* ============================================================================
+   CHANGELOG ADDENDUM — targeted bug-fix & polish pass
+   ============================================================================
+   FIXES
+   • [1] Attorney dropdown option value escaping: option `value` now uses the RAW
+         attorney name instead of esc(a.name); esc() retained only for the visible
+         display text. Prevents value/lookup mismatches for names with apostrophes
+         (e.g. "O'Brien"). (renderAttorneyRoster)
+   • [2] Suggestion string literal: the paying-entity suggestion text now uses
+         — (em dash) and ’ (apostrophe) escapes. NOTE: the shipped file
+         already used a curly apostrophe, so it was NOT a parse error — applied the
+         requested escaping anyway for consistency/safety. (computeSuggestions)
+   • [3] Template name round-trip: template rows now key off the array index
+         (data-idx) rather than data-name. Load handler reads loadTemplates()[idx];
+         deleteTemplate(idx) filters by position. Robust for names containing
+         quotes/apostrophes/special characters. (renderTemplateMenu, deleteTemplate)
+   • [4] Principal-attorney picker visibility: applyTemplate() now sets
+         $('principalList').hidden = true immediately after renderPrincipalSelect(),
+         so the picker no longer stays open after loading a template. (applyTemplate)
+   • [5] Placeholder identity scrubbing: replaced placeholder example text that
+         referenced real people, a real address, and CRE-specific matter language
+         with neutral, multi-practice-appropriate examples — contactName,
+         contactTitle, salutation, contactEmail, clientAddr, attyEmail, attyPhone,
+         matterDesc, generalDesc, anticipatedServices (static HTML only),
+         otherAttyName, limitedScope. Unchanged per spec: clientName, clientNameInd,
+         affiliatedEntities, flat/GR scope fields, CLAUSES, and every
+         PRACTICE_PROFILES.anticipated value. The tokenized principalAttorneys field
+         carries no real-name placeholder (its only placeholder is "No principal
+         attorneys selected"); the ATTORNEYS roster names are the intended admin data
+         source, not placeholder text, and were left untouched.
+
+   IMPROVEMENTS
+   • [1] Profile re-selection guard: added state.profileDirty. It is reset to false
+         at the end of applyProfile() and set true on any manual field edit (global
+         input listener). selectPracticeArea() now prompts when re-selecting the SAME
+         card after edits, not just when switching cards.
+   • [2] Hourly rate back-fill: the feeTypeSeg onChange now, on switching to hourly,
+         also fills $('hourlyRate') from the already-selected responsible attorney's
+         roster rate — no need to re-select the attorney. (init)
    ============================================================================ */
 </script>
 </body>
