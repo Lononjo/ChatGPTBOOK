@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- ============================================================= -->
+  <!-- CUSTOMIZE: Page title + meta description (shown in search/tabs) -->
+  <!-- ============================================================= -->
+  <title>SC Data Center Tracker — Know before it hits the news</title>
+  <meta name="description" content="An independent tracker and newsletter monitoring data center activity across South Carolina local government — rezonings, incentives, power and water deals — surfaced early from primary public records." />
+
+  <!-- ============================================================= -->
+  <!-- OPEN GRAPH / TWITTER CARDS                                      -->
+  <!-- CUSTOMIZE: replace og:url and og:image with your real values.   -->
+  <!-- og:image should be a 1200x630 PNG/JPG hosted at an absolute URL.-->
+  <!-- ============================================================= -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="SC Data Center Tracker — Know before it hits the news" />
+  <meta property="og:description" content="Independent tracking of data center activity across South Carolina — rezonings, incentives, power and water deals — surfaced early from primary public records." />
+  <meta property="og:url" content="https://REPLACE-WITH-YOUR-DOMAIN.com/" />
+  <meta property="og:image" content="https://REPLACE-WITH-YOUR-DOMAIN.com/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:site_name" content="SC Data Center Tracker" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="SC Data Center Tracker — Know before it hits the news" />
+  <meta name="twitter:description" content="Independent tracking of data center activity across South Carolina — surfaced early from primary public records." />
+  <meta name="twitter:image" content="https://REPLACE-WITH-YOUR-DOMAIN.com/og-image.png" />
+
+  <!-- Favicon placeholder: drop a favicon.ico/png next to this file and uncomment -->
+  <!-- <link rel="icon" href="favicon.png" /> -->
+
+  <style>
+    /* =============================================================
+       DESIGN TOKENS — tweak the palette/spacing here in one place.
+       Restrained, trustworthy "independent watchdog" tone.
+       ============================================================= */
+    :root {
+      --ink:        #15201c;   /* near-black, slightly green-toned */
+      --ink-soft:   #41514a;   /* secondary text */
+      --ink-faint:  #6b7a73;   /* captions / footnotes */
+      --paper:      #ffffff;
+      --paper-warm: #f6f8f6;   /* section background */
+      --line:       #e2e8e3;   /* hairline borders */
+      --brand:      #1f6f54;   /* deep palmetto green — CTA */
+      --brand-dark: #185a44;   /* CTA hover */
+      --brand-tint: #eaf3ef;   /* soft brand background */
+      --focus:      #2b8a68;   /* focus ring */
+      --danger:     #b4231f;   /* validation error */
+      --radius:     12px;
+      --maxw:       640px;
+      --shadow:     0 1px 2px rgba(20,32,28,.06), 0 8px 24px rgba(20,32,28,.06);
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      font-family: var(--font);
+      color: var(--ink);
+      background: var(--paper);
+      line-height: 1.55;
+      font-size: 17px;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    /* Respect users who prefer reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      * { transition: none !important; animation: none !important; }
+    }
+
+    .wrap { width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 20px; }
+
+    /* ---- Skip link for keyboard users ---- */
+    .skip-link {
+      position: absolute; left: -999px; top: 0;
+      background: var(--ink); color: #fff; padding: 10px 16px;
+      border-radius: 0 0 8px 0; z-index: 100; text-decoration: none;
+    }
+    .skip-link:focus { left: 0; }
+
+    /* ---- Top eyebrow / kicker ---- */
+    .eyebrow {
+      display: inline-block;
+      font-size: 13px; font-weight: 700; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--brand);
+      background: var(--brand-tint);
+      padding: 6px 12px; border-radius: 999px;
+      margin-bottom: 20px;
+    }
+
+    /* ---- HERO ---- */
+    .hero { padding: 56px 0 44px; text-align: center; }
+    h1 {
+      font-size: clamp(30px, 7vw, 46px);
+      line-height: 1.12;
+      letter-spacing: -0.02em;
+      margin: 0 0 18px;
+      font-weight: 800;
+      color: var(--ink);
+    }
+    .hero .sub {
+      font-size: clamp(17px, 4.4vw, 20px);
+      color: var(--ink-soft);
+      margin: 0 auto 30px;
+      max-width: 34em;
+    }
+
+    /* ---- EMAIL CAPTURE FORM (the single most important element) ---- */
+    .signup { max-width: 480px; margin: 0 auto; text-align: left; }
+    .signup .field-row {
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .visually-hidden {
+      position: absolute !important; width: 1px; height: 1px;
+      padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0);
+      white-space: nowrap; border: 0;
+    }
+    .signup input[type="email"] {
+      width: 100%;
+      font-size: 17px;
+      padding: 16px 16px;
+      border: 1.5px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+      color: var(--ink);
+      font-family: inherit;
+      transition: border-color .15s ease, box-shadow .15s ease;
+    }
+    .signup input[type="email"]::placeholder { color: var(--ink-faint); }
+    .signup input[type="email"]:focus {
+      outline: none;
+      border-color: var(--focus);
+      box-shadow: 0 0 0 3px rgba(43,138,104,.22);
+    }
+    .signup input[aria-invalid="true"] {
+      border-color: var(--danger);
+      box-shadow: 0 0 0 3px rgba(180,35,31,.16);
+    }
+    .btn-primary {
+      width: 100%;
+      font-size: 17px; font-weight: 700;
+      font-family: inherit;
+      padding: 16px 22px;
+      color: #fff; background: var(--brand);
+      border: none; border-radius: var(--radius);
+      cursor: pointer;
+      transition: background .15s ease, transform .05s ease;
+    }
+    .btn-primary:hover { background: var(--brand-dark); }
+    .btn-primary:active { transform: translateY(1px); }
+    .btn-primary:focus-visible {
+      outline: 3px solid var(--focus); outline-offset: 2px;
+    }
+    .btn-primary[disabled] { opacity: .65; cursor: progress; }
+
+    .form-note { font-size: 13.5px; color: var(--ink-faint); margin: 12px 2px 0; }
+
+    /* Inline validation / status messaging */
+    .form-msg { font-size: 14.5px; margin: 12px 2px 0; min-height: 1.2em; }
+    .form-msg.error { color: var(--danger); font-weight: 600; }
+
+    /* Success state replaces the form */
+    .success {
+      text-align: center;
+      background: var(--brand-tint);
+      border: 1px solid #cfe6dc;
+      border-radius: var(--radius);
+      padding: 26px 22px;
+      max-width: 480px; margin: 0 auto;
+    }
+    .success h3 { margin: 0 0 6px; font-size: 20px; color: var(--brand-dark); }
+    .success p { margin: 0; color: var(--ink-soft); font-size: 15.5px; }
+    .success .check {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 44px; height: 44px; border-radius: 999px;
+      background: var(--brand); color: #fff; font-size: 22px;
+      margin-bottom: 12px;
+    }
+
+    /* ---- Generic section ---- */
+    section { padding: 48px 0; }
+    .band { background: var(--paper-warm); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    h2 {
+      font-size: clamp(23px, 5.5vw, 30px);
+      letter-spacing: -0.015em;
+      margin: 0 0 8px; font-weight: 800;
+    }
+    .section-lead { color: var(--ink-soft); margin: 0 0 28px; font-size: 16.5px; max-width: 36em; }
+
+    /* ---- WHY IT MATTERS list ---- */
+    .points { list-style: none; margin: 0; padding: 0; display: grid; gap: 18px; }
+    .points li {
+      display: grid; grid-template-columns: 28px 1fr; gap: 14px; align-items: start;
+    }
+    .points .ico {
+      width: 28px; height: 28px; border-radius: 8px;
+      background: var(--brand-tint); color: var(--brand-dark);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; font-weight: 800; margin-top: 2px;
+    }
+    .points h3 { margin: 0 0 2px; font-size: 17.5px; }
+    .points p { margin: 0; color: var(--ink-soft); font-size: 15.5px; }
+
+    /* ---- WHAT YOU'LL GET ---- */
+    .get-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+    .get-list li {
+      display: grid; grid-template-columns: 22px 1fr; gap: 12px; align-items: start;
+      font-size: 16px; color: var(--ink-soft);
+    }
+    .get-list .tick { color: var(--brand); font-weight: 800; margin-top: 1px; }
+    .get-list strong { color: var(--ink); }
+    .pill-soon {
+      display: inline-block; margin-top: 6px;
+      font-size: 13px; font-weight: 700; color: var(--brand-dark);
+      background: var(--brand-tint); border-radius: 999px; padding: 5px 12px;
+    }
+
+    /* ---- CREDIBILITY ---- */
+    .cred {
+      border-left: 3px solid var(--brand);
+      padding: 6px 0 6px 20px;
+      color: var(--ink-soft);
+      font-size: 16.5px;
+      max-width: 38em;
+    }
+    .cred strong { color: var(--ink); }
+
+    /* ---- FOOTER ---- */
+    footer {
+      padding: 36px 0 48px;
+      border-top: 1px solid var(--line);
+      color: var(--ink-faint);
+      font-size: 14px;
+      text-align: center;
+    }
+    footer a { color: var(--ink-soft); }
+    footer p { margin: 0 0 8px; }
+
+    a { color: var(--brand-dark); }
+
+    /* Slightly roomier layout on larger screens */
+    @media (min-width: 560px) {
+      .signup .field-row { flex-direction: row; }
+      .signup input[type="email"] { flex: 1; }
+      .btn-primary { width: auto; white-space: nowrap; }
+      .hero { padding: 76px 0 56px; }
+      section { padding: 64px 0; }
+    }
+  </style>
+</head>
+
+<body>
+  <a class="skip-link" href="#signup-hero">Skip to signup</a>
+
+  <main id="main">
+
+    <!-- ============================== HERO ============================== -->
+    <header class="hero">
+      <div class="wrap">
+        <span class="eyebrow">South Carolina · Independent</span>
+
+        <!-- CUSTOMIZE: Headline. Keep it plain-language and benefit-first. -->
+        <h1>Know what data centers are doing in South Carolina — before it hits the news.</h1>
+
+        <!-- CUSTOMIZE: One-sentence explanation of the tracker. -->
+        <p class="sub">
+          We monitor South Carolina local government records — rezonings, incentive deals,
+          power and water agreements, planning approvals — and surface data center projects
+          early, straight from the primary source.
+        </p>
+
+        <!-- PRIMARY EMAIL CAPTURE (above the fold) -->
+        <form class="signup" id="signup-hero" novalidate data-form="hero">
+          <div class="field-row">
+            <label class="visually-hidden" for="email-hero">Email address</label>
+            <input
+              type="email"
+              id="email-hero"
+              name="email"
+              inputmode="email"
+              autocomplete="email"
+              placeholder="you@email.com"
+              required
+              aria-describedby="msg-hero note-hero"
+            />
+            <button type="submit" class="btn-primary">Join the waitlist</button>
+          </div>
+          <p class="form-msg" id="msg-hero" role="status" aria-live="polite"></p>
+          <p class="form-note" id="note-hero">
+            Free. No spam. One focused briefing — unsubscribe anytime.
+          </p>
+        </form>
+      </div>
+    </header>
+
+    <!-- ========================= WHY IT MATTERS ========================= -->
+    <section class="band" aria-labelledby="why-h">
+      <div class="wrap">
+        <h2 id="why-h">Why it matters</h2>
+        <p class="section-lead">
+          Data centers are landing across South Carolina, and the first signals show up in
+          county and municipal records — not the headlines. Here's what we watch and why it's worth knowing early.
+        </p>
+
+        <ul class="points">
+          <li>
+            <span class="ico" aria-hidden="true">⚡</span>
+            <div>
+              <h3>Power &amp; your electric bill</h3>
+              <p>Large load requests and utility agreements that can affect grid capacity and rates for everyone on the system.</p>
+            </div>
+          </li>
+          <li>
+            <span class="ico" aria-hidden="true">💧</span>
+            <div>
+              <h3>Water &amp; local resources</h3>
+              <p>Water usage, withdrawals, and cooling demands tied to projects near your community.</p>
+            </div>
+          </li>
+          <li>
+            <span class="ico" aria-hidden="true">📍</span>
+            <div>
+              <h3>Where projects are going</h3>
+              <p>Rezonings, site plans, and planning approvals that decide what gets built next door — plus tax breaks and incentive deals on the table.</p>
+            </div>
+          </li>
+          <li>
+            <span class="ico" aria-hidden="true">📈</span>
+            <div>
+              <h3>Early signal for professionals</h3>
+              <p>Developers, utilities, and advisors get a clear, sourced read on activity statewide before it's widely reported.</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ========================= WHAT YOU'LL GET ======================== -->
+    <section aria-labelledby="get-h">
+      <div class="wrap">
+        <h2 id="get-h">What you'll get</h2>
+        <p class="section-lead">
+          A plain-language email newsletter and tracker covering data center activity
+          across South Carolina — pulled from primary public records, not press releases.
+        </p>
+
+        <ul class="get-list">
+          <li><span class="tick" aria-hidden="true">✓</span><span><strong>Statewide coverage.</strong> Local government activity from across South Carolina in one place.</span></li>
+          <li><span class="tick" aria-hidden="true">✓</span><span><strong>Sourced from the record.</strong> Rezonings, incentives, power and water agreements, and planning items — with links back to the documents.</span></li>
+          <li><span class="tick" aria-hidden="true">✓</span><span><strong>Early, not breaking.</strong> Surfaced from filings before it becomes a news story.</span></li>
+          <li><span class="tick" aria-hidden="true">✓</span><span><strong>Skimmable.</strong> Clear summaries you can read in a couple of minutes — no jargon.</span></li>
+        </ul>
+
+        <p style="margin-top:22px">
+          <span class="pill-soon">Launching soon</span>
+        </p>
+        <p class="section-lead" style="margin-top:14px">
+          This is an early waitlist. Join now and you'll be among the first to get it when
+          the first briefing goes out.
+        </p>
+      </div>
+    </section>
+
+    <!-- =========================== CREDIBILITY ========================= -->
+    <section class="band" aria-labelledby="cred-h">
+      <div class="wrap">
+        <h2 id="cred-h">Who's behind this</h2>
+        <!-- CUSTOMIZE: Replace the placeholder bio line below with a real,
+             honest one-sentence bio. Do NOT add credentials you can't stand behind. -->
+        <p class="cred">
+          <strong>[PLACEHOLDER — your one-line bio.]</strong>
+          Built by someone who reads the primary government record directly —
+          tracking the filings, agendas, and agreements that decide where data centers land.
+        </p>
+      </div>
+    </section>
+
+    <!-- ===================== SECOND EMAIL CAPTURE ====================== -->
+    <section aria-labelledby="join-h">
+      <div class="wrap" style="text-align:center">
+        <h2 id="join-h">Get on the list</h2>
+        <p class="section-lead" style="margin:0 auto 26px">
+          Be the first to know what's happening with data centers in South Carolina.
+        </p>
+
+        <form class="signup" id="signup-foot" novalidate data-form="footer">
+          <div class="field-row">
+            <label class="visually-hidden" for="email-foot">Email address</label>
+            <input
+              type="email"
+              id="email-foot"
+              name="email"
+              inputmode="email"
+              autocomplete="email"
+              placeholder="you@email.com"
+              required
+              aria-describedby="msg-foot note-foot"
+            />
+            <button type="submit" class="btn-primary">Join the waitlist</button>
+          </div>
+          <p class="form-msg" id="msg-foot" role="status" aria-live="polite"></p>
+          <p class="form-note" id="note-foot">
+            Free. No spam. Unsubscribe anytime.
+          </p>
+        </form>
+      </div>
+    </section>
+
+    <!-- ============================== FOOTER =========================== -->
+    <footer>
+      <div class="wrap">
+        <!-- CUSTOMIZE: Honest independence note. Fill in or remove the bracketed bits. -->
+        <p>An independent project. Not affiliated with any government agency, utility, or company.</p>
+        <p>
+          <!-- CUSTOMIZE: contact + privacy links -->
+          <a href="mailto:REPLACE@example.com">Contact</a>
+          &nbsp;·&nbsp;
+          <a href="#" data-placeholder="privacy">Privacy</a>
+        </p>
+        <p style="color:var(--line)">© <span id="year"></span> SC Data Center Tracker</p>
+      </div>
+    </footer>
+
+  </main>
+
+  <script>
+    /* =================================================================
+       EMAIL CAPTURE — WIRE YOUR REAL SERVICE HERE
+       =================================================================
+       Set EMAIL_ENDPOINT to your form provider's POST URL. The form sends
+       a POST with the field "email" (and a "source" field telling you which
+       form on the page was used: "hero" or "footer").
+
+       Works out of the box with services that accept a simple POST:
+
+       • Formspree     → https://formspree.io/f/XXXXXXXX
+                         (returns JSON; set EXPECTS_JSON = true below)
+       • Google Forms  → use the form's "formResponse" action URL and change
+                         the field name from "email" to your entry.XXXX id.
+                         Google blocks reading the response, so set
+                         FORM_MODE = "no-cors" below (you won't get a JSON
+                         reply, but the submit still records).
+       • ConvertKit    → use their form action URL (POST), field "email_address".
+       • Mailchimp     → use the embedded form's "post-json" action; note
+                         Mailchimp needs a hidden bot field — see their docs.
+
+       If your provider needs a differently-named field, change FIELD_NAME.
+       ================================================================= */
+    const EMAIL_ENDPOINT = "REPLACE_WITH_YOUR_ENDPOINT"; // e.g. "https://formspree.io/f/abcdwxyz"
+    const FIELD_NAME     = "email";   // change if your provider expects another name
+    const FORM_MODE      = "cors";    // "cors" for Formspree/ConvertKit; "no-cors" for Google Forms
+    const EXPECTS_JSON   = true;      // true if provider returns JSON (Formspree). false for no-cors.
+
+    /* ---- email validation (intentionally lenient; the server is the real check) ---- */
+    function isValidEmail(value) {
+      // Trim, require something@something.tld
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+    }
+
+    /* ---- submit handler shared by both forms ---- */
+    async function handleSubmit(form) {
+      const input  = form.querySelector('input[type="email"]');
+      const msg    = form.querySelector('.form-msg');
+      const button = form.querySelector('button[type="submit"]');
+      const source = form.getAttribute('data-form') || "page";
+      const email  = input.value.trim();
+
+      // reset prior state
+      msg.textContent = "";
+      msg.classList.remove('error');
+      input.setAttribute('aria-invalid', 'false');
+
+      // empty / invalid handling
+      if (!email) {
+        showError(input, msg, "Please enter your email address.");
+        return;
+      }
+      if (!isValidEmail(email)) {
+        showError(input, msg, "That doesn't look like a valid email — please check it.");
+        return;
+      }
+
+      // guard: endpoint not configured yet
+      if (EMAIL_ENDPOINT === "REPLACE_WITH_YOUR_ENDPOINT") {
+        showError(input, msg,
+          "Signup isn't connected yet. (Developer: set EMAIL_ENDPOINT in the page script.)");
+        console.warn("[waitlist] EMAIL_ENDPOINT is not configured. Set it in the <script> block.");
+        return;
+      }
+
+      // submitting state
+      const originalLabel = button.textContent;
+      button.disabled = true;
+      button.textContent = "Joining…";
+
+      try {
+        const body = new FormData();
+        body.append(FIELD_NAME, email);
+        body.append("source", source); // which form: "hero" or "footer"
+
+        const opts = { method: "POST", body };
+        if (FORM_MODE === "no-cors") {
+          // Google Forms: opaque response, we can't read it but the submit lands.
+          opts.mode = "no-cors";
+        } else if (EXPECTS_JSON) {
+          opts.headers = { "Accept": "application/json" };
+        }
+
+        const res = await fetch(EMAIL_ENDPOINT, opts);
+
+        // In no-cors mode we can't inspect res; assume success if no network error.
+        if (FORM_MODE === "no-cors" || res.ok || res.type === "opaque") {
+          showSuccess(form);
+          return;
+        }
+
+        // Provider returned an error status
+        throw new Error("Request failed with status " + res.status);
+      } catch (err) {
+        console.error("[waitlist] submit failed:", err);
+        button.disabled = false;
+        button.textContent = originalLabel;
+        showError(input, msg,
+          "Something went wrong on our end. Please try again in a moment.");
+      }
+    }
+
+    function showError(input, msg, text) {
+      input.setAttribute('aria-invalid', 'true');
+      msg.textContent = text;
+      msg.classList.add('error');
+      input.focus();
+    }
+
+    /* Replace the form with a clear, friendly success state */
+    function showSuccess(form) {
+      const note = form.parentElement;
+      const success = document.createElement('div');
+      success.className = 'success';
+      success.setAttribute('role', 'status');
+      success.innerHTML =
+        '<div class="check" aria-hidden="true">✓</div>' +
+        '<h3>You\'re on the list</h3>' +
+        '<p>Thanks for signing up — we\'ll be in touch when the first briefing goes out.</p>';
+      form.replaceWith(success);
+      // Move focus to the confirmation for screen-reader users
+      success.setAttribute('tabindex', '-1');
+      success.focus();
+    }
+
+    /* ---- wire up both forms ---- */
+    document.querySelectorAll('form.signup').forEach(function (form) {
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        handleSubmit(form);
+      });
+      // clear error styling as the user types again
+      const input = form.querySelector('input[type="email"]');
+      input.addEventListener('input', function () {
+        if (input.getAttribute('aria-invalid') === 'true') {
+          input.setAttribute('aria-invalid', 'false');
+          const msg = form.querySelector('.form-msg');
+          msg.textContent = "";
+          msg.classList.remove('error');
+        }
+      });
+    });
+
+    /* current year in footer */
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
